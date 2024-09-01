@@ -58,10 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
-    'corsheaders'
-]
+    'corsheaders']
 
-
+AUTH_USER_MODEL="api.customUserModel"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
