@@ -15,7 +15,7 @@ class CreateUserView(generics.CreateAPIView):
         user_instance = CustomUserModel.objects.get(username=user['username'])
 
 
-        # genarate tokens
+        # generate tokens
         refresh = RefreshToken.for_user(user_instance)
 
         # add tokens to the responce 
