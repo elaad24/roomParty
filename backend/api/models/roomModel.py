@@ -19,4 +19,6 @@ class RoomModel(models.Model):
     user_can_pass_songs=models.BooleanField(default=False)
     votes_to_switch_type_is_num=models.BooleanField(default=True)
     votes_to_switch=models.IntegerField(default=1)
+    is_active=models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    users_in_room= models.IntegerField(default=1)

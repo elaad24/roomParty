@@ -13,7 +13,9 @@ class RoomSerializer(serializers.ModelSerializer):
                 ]
         extra_kwargs={
             "code":{"required":False},
-            "host":{"required":False}
+            "host":{"required":False},
+            "is_active":{"required":False},
+            "users_in_room":{"required":False}
         }
     
     def create(self,validated_data):
