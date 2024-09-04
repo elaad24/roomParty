@@ -15,6 +15,7 @@ class CreateRoomView(generics.CreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save()
         room_key= instance.code
+        instance.save()
         
         user = self.request.user
         user.room=room_key

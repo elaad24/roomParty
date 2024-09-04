@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from api.models.roomModel import RoomModel
+from api.models.votesModel import VotesModel
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,5 +23,15 @@ class RoomSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validated_data['room_name']=f"{user.username}-room"
         validated_data['host']=user.username
-        return super().create(validated_data)
+        room_instance =  super().create(validated_data)
 
+#  create votes instance  based on the room  
+        VotesModel.objects.create(
+            room_key=room_instance.code,
+            host_username=room_instance.host
+        )
+        return room_instance
+
+
+# need to add an function that update the active song and the img 
+# and another one tho update the user in room 

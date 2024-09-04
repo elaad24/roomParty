@@ -22,3 +22,6 @@ class RoomModel(models.Model):
     is_active=models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     users_in_room= models.IntegerField(default=1)
+    active_song_id=models.CharField(max_length=100, default="")
+    active_song_img=models.CharField(max_length=1000,default="")
+
