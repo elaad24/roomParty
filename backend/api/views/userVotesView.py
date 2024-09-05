@@ -41,23 +41,4 @@ class UserVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.Ge
             return Response({"message":"error couldn't find the instance,user isn't in the room song id isn't active"},status=status.HTTP_400_BAD_REQUEST)
 
 
-    def put(self, request, *args, **kwargs):
-        username = request.user.username
-        room_key_field_value = request.data.get("room_key",None)
-        active_song_id_field_value = request.data.get("active_song_id",None)
-        vote_type_value=request.data.get("vote_type",None)
-        instance = self.queryset.filter(username=username,
-        room_key=room_key_field_value,
-        active_song_id=active_song_id_field_value).first()
-
-        if not instance:
-            return Response({"message":"error couldn't find the instance, passed wrong room_key or active_song_id"},status=status.HTTP_400_BAD_REQUEST)
-        
-        serializer = self.get_serializer(instance,data=request.data, partial=True)
-
-        if serializer.is_valid():
-            self.perform_update(serializer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+   

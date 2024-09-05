@@ -25,11 +25,6 @@ class RoomSerializer(serializers.ModelSerializer):
         validated_data['host']=user.username
         room_instance =  super().create(validated_data)
 
-#  create votes instance  based on the room  
-        VotesModel.objects.create(
-            room_key=room_instance.code,
-            host_username=room_instance.host
-        )
         return room_instance
 
 
