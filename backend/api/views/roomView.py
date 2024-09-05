@@ -19,7 +19,6 @@ class CreateRoomView(generics.CreateAPIView):
        
         user = self.request.user
         existing_instance= RoomModel.objects.filter(host=user.username).first()
-        print("existing_instance",existing_instance)
 
         if existing_instance != None:
             # clean up

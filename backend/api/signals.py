@@ -25,10 +25,9 @@ def update_vote_count_in_vote_model_by_voteUserModel(sender, instance, created, 
 @receiver(pre_save,sender=VotesModel)
 def cleanup_in_UserVotesModel_when_song_change(sender, instance,**kwargs):
 
-    DB_instance=VotesModel.objects.filter(room_key=instance.room_key).first()
-
-    if DB_instance and  DB_instance.active_song_id !=instance.active_song_id:
-        UserVotesModel.filter(room_key=instance.room_key , active_song_id=instance.active_song_id).delete()
+    prev_DB_instance=VotesModel.objects.filter(room_key=instance.room_key).first()
+    if prev_DB_instance and  prev_DB_instance.active_song_id !=instance.active_song_id:
+        UserVotesModel.objects.filter(room_key=instance.room_key , active_song_id=prev_DB_instance.active_song_id).delete()
       
 
 
