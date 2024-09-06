@@ -22,7 +22,4 @@ class RoomSerializer(serializers.ModelSerializer):
             "users_in_room":{"required":False}
         }
     
-
-
-# need to add an function that update the active song and the img 
-# and another one tho update the user in room 
+ 

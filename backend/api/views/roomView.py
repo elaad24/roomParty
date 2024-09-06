@@ -25,6 +25,7 @@ class CreateRoomView(generics.CreateAPIView):
             prev_room_key=existing_instance.code
             VotesModel.objects.filter(room_key=prev_room_key).delete()      
             UserVotesModel.objects.filter(room_key=prev_room_key).delete()
+            usersInRoom=CustomUserModel.objects.filter(room=existing_instance.code).update(room="")
             existing_instance.delete()
         
         #setting the new room data

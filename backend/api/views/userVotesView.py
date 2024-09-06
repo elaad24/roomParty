@@ -29,7 +29,6 @@ class UserVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.Ge
                return self.create(request, *args, **kwargs)
             #there is a vote and its the save
             elif UserVotesModel_instance.vote_type==vote_type_value:
-                print(2)
                 return Response({"message":"same vote already existing"},status=status.HTTP_200_OK)
             #there is a vote and its not the same 
             elif UserVotesModel_instance and UserVotesModel_instance.vote_type!=vote_type_value:
