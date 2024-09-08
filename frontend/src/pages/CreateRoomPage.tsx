@@ -25,7 +25,7 @@ export default function CreateRoomPage() {
   };
 
   const createRoom = async () => {
-    const { data } = await axios.post("http://127.0.0.1:8000/api/create-room", {
+    const { data } = await axios.post("http://localhost:8000/api/create-room", {
       guest_can_pause: ableToControlState,
       votes_to_skip: votes,
     });

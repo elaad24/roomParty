@@ -20,7 +20,7 @@ export default function Room() {
     const getRoomInfo = async () => {
       try {
         const { data } = await axios.get(
-          `http://127.0.0.1:8000/api/get-room?code=${roomCode}`
+          `http://localhost:8000/api/get-room?code=${roomCode}`
         );
         console.log(data);
 

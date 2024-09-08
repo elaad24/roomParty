@@ -1,5 +1,5 @@
 import axios from "axios";
-import { backendUrl } from "./url";
+import apiClient from "./apiClient";
 
 interface userSignupInterface {
   username: string;
@@ -11,7 +11,7 @@ export const userSignup = async ({
   password,
 }: userSignupInterface) => {
   try {
-    const res = await axios.post(`${backendUrl}createUser`, {
+    const res = await apiClient.post(`createUser`, {
       username: username,
       password: password,
     });
@@ -20,5 +20,16 @@ export const userSignup = async ({
     if (axios.isAxiosError(error)) {
       throw error;
     }
+  }
+};
+
+export const regenerateAccessToken = async () => {
+  try {
+    const response = await apiClient.get("/newAccessToken");
+    return response.data.access;
+  } catch (err: any) {
+    console.log("error", err.response?.data || err.message || err);
+
+    throw err;
   }
 };

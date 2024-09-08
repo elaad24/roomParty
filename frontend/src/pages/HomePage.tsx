@@ -10,7 +10,7 @@ export default function HomePage() {
     const checkIfUSerInRoom = async () => {
       try {
         const { data } = await axios.get(
-          `http://127.0.0.1:8000/api/user-in-room`
+          `http://localhost:8000/api/user-in-room`
         );
         console.log(data);
         if (data.code !== null) {
