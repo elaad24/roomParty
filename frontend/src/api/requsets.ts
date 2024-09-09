@@ -8,7 +8,7 @@ interface UserInRoomResponse {
 export const checkUserInRoom = async (): Promise<UserInRoomResponse | any> => {
   try {
     const { data }: AxiosResponse<UserInRoomResponse> = await apiClient.get(
-      "user-in-room"
+      "isUserInRoom"
     );
 
     return data;
@@ -39,7 +39,7 @@ export const createRoom = async ({
 }: createRoomProps): Promise<AxiosResponse<CreateRoomResponse | any>> => {
   try {
     const response: AxiosResponse<CreateRoomResponse> = await apiClient.post(
-      "create-room",
+      "createRoom",
       {
         user_can_pass_songs,
         votes_to_switch_type_is_num,
@@ -60,7 +60,7 @@ export const joinRoom = async ({
   roomCode,
 }: joinRoomProps): Promise<AxiosResponse> => {
   try {
-    const res = await apiClient.post("join-room", {
+    const res = await apiClient.post("joinRoom", {
       code: roomCode,
     });
     return res;

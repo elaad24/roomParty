@@ -1,9 +1,10 @@
-from rest_framework import generics
+from rest_framework import generics,status
 from api.models.customUserModel import CustomUserModel
 from api.serializers.user_serializer import UserSerializer
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from datetime import timedelta
+from api.authentication import CookieJWTAuthentication
+from rest_framework.response import Response
 from django.utils import timezone
 
 class CreateUserView(generics.CreateAPIView):
@@ -43,3 +44,16 @@ class CreateUserView(generics.CreateAPIView):
         )
 
         return response
+    
+class CheckIfUserInRoom(generics.ListAPIView):
+    queryset= CustomUserModel.objects.all()
+    serializer_class =UserSerializer
+    authentication_classes=[CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request, *args, **kwargs):
+        user = request.user
+        print(user.id)
+        if(user.room!="null"):
+            return Response({"code":user.room},status=status.HTTP_200_OK)
+        return Response({"message":"couldnt find the user "},status=status.HTTP_404_NOT_FOUND)
