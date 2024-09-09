@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { getCookie } from "../utils/helpers";
-import { regenerateAccessToken } from "../api/userRequsets";
+import { regenerateAccessToken } from "../api/authRequsets";
 
 const RequireAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

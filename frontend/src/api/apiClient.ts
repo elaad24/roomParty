@@ -1,7 +1,7 @@
 import axios from "axios";
 import { backendUrl } from "./url";
 import { getCookie } from "../utils/helpers";
-import { regenerateAccessToken } from "./userRequsets";
+import { regenerateAccessToken } from "./authRequsets";
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
