@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { checkUserInRoom } from "../api/requsets";
+import { checkUserInRoom } from "../api/userRequsets";
 
 export default function HomePage() {
   const navigate = useNavigate();

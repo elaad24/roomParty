@@ -1,23 +1,6 @@
 import { AxiosResponse } from "axios";
 import apiClient from "./apiClient";
 
-interface UserInRoomResponse {
-  code: string | boolean | null;
-}
-
-export const checkUserInRoom = async (): Promise<UserInRoomResponse | any> => {
-  try {
-    const { data }: AxiosResponse<UserInRoomResponse> = await apiClient.get(
-      "isUserInRoom"
-    );
-
-    return data;
-  } catch (err) {
-    console.error(err);
-    return err;
-  }
-};
-
 interface createRoomProps {
   user_can_pass_songs: boolean;
   votes_to_switch_type_is_num: boolean;

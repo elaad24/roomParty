@@ -9,9 +9,8 @@ import {
   Box,
   Stack,
 } from "@mui/material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { createRoom } from "../api/requsets";
+import { createRoom } from "../api/roomRequsets";
 
 export default function CreateRoomPage() {
   const [ableToControlState, setAbleToControlState] = useState<boolean>(true);

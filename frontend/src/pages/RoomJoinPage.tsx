@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { joinRoom } from "../api/requsets";
+import { joinRoom } from "../api/roomRequsets";
 
 export default function RoomJoinPage() {
   const [roomCode, setRoomCode] = useState<string>("");

@@ -7,8 +7,7 @@ import {
   Box,
   Alert,
 } from "@mui/material";
-import { userSignup } from "../api/user";
-import { AxiosError } from "axios";
+import { userSignup } from "../api/userRequsets";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {

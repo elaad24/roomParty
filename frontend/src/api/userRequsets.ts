@@ -1,5 +1,6 @@
 import axios from "axios";
 import apiClient from "./apiClient";
+import { AxiosResponse } from "axios";
 
 interface userSignupInterface {
   username: string;
@@ -23,13 +24,19 @@ export const userSignup = async ({
   }
 };
 
-export const regenerateAccessToken = async () => {
-  try {
-    const response = await apiClient.get("/newAccessToken");
-    return response.data.access;
-  } catch (err: any) {
-    console.log("error", err.response?.data || err.message || err);
+interface UserInRoomResponse {
+  code: string | boolean | null;
+}
 
-    throw err;
+export const checkUserInRoom = async (): Promise<UserInRoomResponse | any> => {
+  try {
+    const { data }: AxiosResponse<UserInRoomResponse> = await apiClient.get(
+      "isUserInRoom"
+    );
+
+    return data;
+  } catch (err) {
+    console.error(err);
+    return err;
   }
 };
