@@ -1,27 +1,19 @@
 import React, { useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { checkUserInRoom } from "../api/requsets";
 
 export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkIfUSerInRoom = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:8000/api/user-in-room`
-        );
-        console.log(data);
-        if (data.code !== null) {
-          navigate(`/room/${data.code}`);
-        }
-      } catch (err) {
-        console.log(err);
+    const run = async () => {
+      const data = await checkUserInRoom();
+      if (data.code !== null) {
+        navigate(`/room/${data.code}`);
       }
     };
-
-    checkIfUSerInRoom();
+    run();
   }, []);
 
   const handleJoinRoom = () => {

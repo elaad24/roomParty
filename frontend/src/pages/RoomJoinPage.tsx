@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { joinRoom } from "../api/requsets";
 
 export default function RoomJoinPage() {
   const [roomCode, setRoomCode] = useState<string>("");
@@ -13,15 +14,12 @@ export default function RoomJoinPage() {
 
   const handleEnterRoom = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/api/join-room", {
-        code: roomCode,
-      });
-      console.log(res);
-      navigation(`/room/${roomCode}`);
+      const { data } = await joinRoom({ roomCode });
+      if (data) {
+        navigation(`/room/${roomCode}`);
+      }
     } catch (error: any) {
       setError(error.response.data.message);
-      console.log(error.response.data);
-      console.error(error);
     }
   };
 

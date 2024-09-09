@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { createRoom } from "../api/requsets";
 
 export default function CreateRoomPage() {
   const [ableToControlState, setAbleToControlState] = useState<boolean>(true);
@@ -24,13 +25,15 @@ export default function CreateRoomPage() {
     setVotes(parseInt(event.target.value));
   };
 
-  const createRoom = async () => {
-    const { data } = await axios.post("http://localhost:8000/api/create-room", {
-      guest_can_pause: ableToControlState,
-      votes_to_skip: votes,
+  const handelCreate = async () => {
+    const { data } = await createRoom({
+      user_can_pass_songs: ableToControlState,
+      votes_to_switch: votes,
+      votes_to_switch_type_is_num: true,
     });
-    navigation(`/room/${data.code}`);
-    console.log("data", data);
+    if (data.code !== null) {
+      navigation(`/room/${data.code}`);
+    }
   };
 
   const handleBack = () => {
@@ -78,7 +81,7 @@ export default function CreateRoomPage() {
       />
       <Stack direction="row" gap={"2em"}>
         <Button
-          onClick={() => createRoom()}
+          onClick={() => handelCreate()}
           variant="contained"
           color="primary"
           size="large"
