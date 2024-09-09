@@ -2,6 +2,23 @@ import React, { useEffect, useState } from "react";
 import { checkUserInRoom, getUser } from "../api/userRequsets";
 import { useNavigate, useParams } from "react-router-dom";
 import { checkRoomIsExist, RoomResponse } from "../api/roomRequsets";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  List,
+  ListItem,
+  IconButton,
+} from "@mui/material";
+import Grid from "@mui/material/Grid2";
+
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import CurrentSongBox from "../components/CurrentSongBox";
+import SuggestedSongsBox from "../components/SuggestedSongsBox";
+import SongsQueue from "../components/SongsQueue";
+import ConnectToSpotifybox from "../components/ConnectToSpotifybox";
 
 export default function PartyRoom() {
   const [roomInfo, setRoomInfo] = useState<RoomResponse | null>(null);
@@ -35,18 +52,23 @@ export default function PartyRoom() {
       }
       setUserInfo(userData);
     };
-    run();
+    // run();
   }, []);
 
   return (
-    <>
-      <div>PartyRoom</div>
-      <div>PartyRoom</div>
-      <div>PartyRoom</div>
-      <div>PartyRoom</div>
-      <div>PartyRoom</div>
-      <div style={{ color: "teal" }}>PartyRoom</div>
-      <div>PartyRoom</div>
-    </>
+    <Box sx={{ padding: 2, backgroundColor: "#f0f4ff", minHeight: "100vh" }}>
+      <Grid container spacing={2}>
+        {/* Current Song Section */}
+        <CurrentSongBox />
+        {/* Suggested Songs Section */}
+        {/* <SuggestedSongsBox /> */}
+        {/* Songs Queue Section */}
+        {/* <SongsQueue /> */}
+        {/* Suggest Song Section */}
+        {/* <SuggestedSongsBox /> */}
+        {/* Connect with Spotify Section */}
+        {/* <ConnectToSpotifybox /> */}{" "}
+      </Grid>
+    </Box>
   );
 }
