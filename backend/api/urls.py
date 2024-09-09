@@ -1,7 +1,7 @@
 from django.urls import path
-from .views.userViews import CreateUserView , CheckIfUserInRoom
+from .views.userViews import CreateUserView , CheckIfUserInRoom,getUserInfo
 from .views.authView import RefreshAccessTokenView
-from .views.roomView import CreateRoomView,JoinRoomView
+from .views.roomView import CreateRoomView,JoinRoomView,getRoomInfo
 from .views.userVotesView import UserVotesView
 from .views.songsView import ChangeSong
 
@@ -12,5 +12,7 @@ urlpatterns = [
     path("joinRoom/",JoinRoomView.as_view(),name="join-room"),
     path("vote",UserVotesView.as_view(),name="vote"),
     path("changeSong",ChangeSong.as_view(),name="change-song"),
-    path("isUserInRoom",CheckIfUserInRoom.as_view(),name="is-user-in-room")
+    path("isUserInRoom",CheckIfUserInRoom.as_view(),name="is-user-in-room"),
+    path("getUserInfo",getUserInfo.as_view(),name="get-user-info"),
+    path("geRoomInfo/",getRoomInfo.as_view(),name="get-room-info")
         ]

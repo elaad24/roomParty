@@ -40,3 +40,23 @@ export const checkUserInRoom = async (): Promise<UserInRoomResponse | any> => {
     return err;
   }
 };
+
+export interface getUserInterfaceResponse {
+  id: number;
+  username: string;
+  room: string;
+  host: boolean;
+}
+
+export const getUser = async (): Promise<getUserInterfaceResponse | any> => {
+  try {
+    const { data }: AxiosResponse<UserInRoomResponse> = await apiClient.get(
+      "getUserInfo"
+    );
+
+    return data;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};

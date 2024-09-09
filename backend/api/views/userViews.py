@@ -53,7 +53,20 @@ class CheckIfUserInRoom(generics.ListAPIView):
 
     def get(self,request, *args, **kwargs):
         user = request.user
-        print(user.id)
         if(user.room!="null"):
             return Response({"code":user.room},status=status.HTTP_200_OK)
+        return Response({"message":"couldnt find the user "},status=status.HTTP_404_NOT_FOUND)
+
+
+class getUserInfo(generics.ListAPIView):
+    queryset= CustomUserModel.objects.all()
+    serializer_class =UserSerializer
+    authentication_classes=[CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request, *args, **kwargs):
+        user = request.user
+       
+        if(user):
+            return Response({"user":user},status=status.HTTP_200_OK)
         return Response({"message":"couldnt find the user "},status=status.HTTP_404_NOT_FOUND)
