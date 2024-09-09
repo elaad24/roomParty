@@ -7,6 +7,7 @@ import Room from "./components/Room";
 import Signup from "./pages/Signup";
 import RequireAuth from "./auth/RequireAuth";
 import { AuthProvider } from "./auth/AuthContext";
+import PartyRoom from "./pages/PartyRoom";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/createRoom" element={<CreateRoomPage />} />
           <Route path="/joinRoom" element={<RoomJoinPage />} />
           <Route path="/room/:roomCode" element={<Room />} />
+          <Route path="/partyRoom/:roomCode" element={<PartyRoom />} />
           <Route path="*" element={<HomePage />} />
         </Route>
       </Routes>
