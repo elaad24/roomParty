@@ -6,7 +6,7 @@ from api.models.customUserModel import CustomUserModel
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUserModel
-        fields = ["id","username","password","room","host"]
+        fields = ["id","username","password","room","host","is_active"]
         extra_kwargs={
             "password":{"write_only":True},
             "room":{"required":False}

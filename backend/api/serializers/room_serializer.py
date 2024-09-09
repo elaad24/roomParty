@@ -14,6 +14,9 @@ class RoomSerializer(serializers.ModelSerializer):
                     "user_can_pass_songs",
                     "votes_to_switch_type_is_num",
                     "votes_to_switch",
+                    "active_song_img",
+                    "active_song_id",
+                    "users_in_room"
                 ]
         extra_kwargs={
             # "code":{"required":False},

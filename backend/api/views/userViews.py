@@ -66,7 +66,7 @@ class getUserInfo(generics.ListAPIView):
 
     def get(self,request, *args, **kwargs):
         user = request.user
-       
+
         if(user):
-            return Response({"user":user},status=status.HTTP_200_OK)
+            return Response(UserSerializer(user).data,status=status.HTTP_200_OK)
         return Response({"message":"couldnt find the user "},status=status.HTTP_404_NOT_FOUND)
