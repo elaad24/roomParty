@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { List, ListItem, Stack } from "@mui/material";
 
 import Button from "@mui/material/Button";
@@ -6,7 +6,11 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import { voteForSuggestSong } from "../api/roomRequsets";
+import {
+  getUserVoteOnSuggestedSongs,
+  userSuggestSongsVotes,
+  voteForSuggestSong,
+} from "../api/roomRequsets";
 
 interface suggestedSong {
   suggestedBy: string;
@@ -23,12 +27,31 @@ export default function SuggestedSongsBox({
   room_key,
   songs,
 }: suggestedSongsProps) {
+  const [userVotesData, setUserVotesData] = useState<
+    userSuggestSongsVotes[] | null
+  >(null);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const data = await getUserVoteOnSuggestedSongs({ room_key });
+    if (data.length) {
+      setUserVotesData(data);
+    } else {
+      setUserVotesData(null);
+    }
+  };
+
   const handelPress = async (suggested_songs_id: string) => {
     // need to build a function that retrive all of the votes for suggestoin for songs
     try {
       await voteForSuggestSong({ room_key, suggested_songs_id });
+      await getData();
     } catch (error) {}
   };
+
   return (
     <Grid>
       <Box sx={{ border: "1px dashed grey", padding: 2, borderRadius: 2 }}>
@@ -54,10 +77,20 @@ export default function SuggestedSongsBox({
                   </Stack>
                   <Button
                     onClick={() => handelPress(song.active_song_id)}
-                    variant="outlined"
+                    variant={
+                      userVotesData?.some(
+                        (i) => i.suggested_songs_id == song.active_song_id
+                      )
+                        ? "contained"
+                        : "outlined"
+                    }
                     sx={{ marginLeft: "auto" }}
                   >
-                    Like
+                    {userVotesData?.some(
+                      (i) => i.suggested_songs_id == song.active_song_id
+                    )
+                      ? "Liked"
+                      : "Like"}
                   </Button>
                 </Stack>
                 <Typography

@@ -106,3 +106,22 @@ export const voteForSuggestSong = async ({
     return Promise.reject(error);
   }
 };
+
+export interface userSuggestSongsVotes {
+  room_key: string;
+  suggested_songs_id: string;
+  username: string;
+}
+
+export const getUserVoteOnSuggestedSongs = async ({
+  room_key,
+}: checkRoomIsExist): Promise<userSuggestSongsVotes[] | any> => {
+  try {
+    const response: AxiosResponse<RoomResponse> = await apiClient.get(
+      `suggestSongUserVote/?room_key=${room_key}`
+    );
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

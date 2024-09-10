@@ -17,8 +17,8 @@ export interface CurrentSongBoxProps {
 export default function CurrentSongBox({
   songName,
   imgUrl,
-  likes,
-  dislikes,
+  likes = 0,
+  dislikes = 0,
 }: CurrentSongBoxProps) {
   const [submitComment, setSubmitComment] = useState<"like" | "dislike" | null>(
     null
