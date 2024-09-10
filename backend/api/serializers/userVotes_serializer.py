@@ -9,5 +9,8 @@ class UserVotesSerializer(serializers.ModelSerializer):
             "active_song_id",
             "vote_type"
         ]
+        extra_kwargs={
+            "username":{"required":False},
+                    }
       
 

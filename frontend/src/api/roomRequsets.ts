@@ -69,6 +69,28 @@ export const checkRoomIsExist = async ({
   }
 };
 
+interface voteForCurrentSong {
+  room_key: string;
+  active_song_id: string;
+  vote_type: "1" | "0";
+}
+export const voteForCurrentSong = async ({
+  room_key,
+  active_song_id,
+  vote_type,
+}: Partial<voteForCurrentSong>): Promise<AxiosResponse> => {
+  try {
+    const res = await apiClient.post("vote", {
+      room_key,
+      active_song_id,
+      vote_type,
+    });
+    return res;
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+};
+
 interface suggestSong {
   room_key: string;
   suggested_songs_id: string;

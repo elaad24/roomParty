@@ -61,7 +61,14 @@ export default function PartyRoom() {
   return (
     <Box sx={{ padding: 2, backgroundColor: "#f0f4ff", minHeight: "100vh" }}>
       <Grid container spacing={2}>
-        <CurrentSongBox songName="EGOT" likes={0} dislikes={0} imgUrl="sss" />
+        <CurrentSongBox
+          room_key={"BSBCCI"}
+          active_song_id={"def"}
+          songName="EGOT"
+          likes={0}
+          dislikes={0}
+          imgUrl="sss"
+        />
         <SuggestedSongsBox
           room_key="BSBCCI"
           songs={[

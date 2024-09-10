@@ -6,16 +6,21 @@ import Box from "@mui/material/Box";
 
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import { voteForCurrentSong } from "../api/roomRequsets";
 
 export interface CurrentSongBoxProps {
+  room_key: string;
   songName: string;
+  active_song_id: string;
   imgUrl: string;
   likes: number;
   dislikes: number;
 }
 
 export default function CurrentSongBox({
+  room_key,
   songName,
+  active_song_id,
   imgUrl,
   likes = 0,
   dislikes = 0,
@@ -30,11 +35,20 @@ export default function CurrentSongBox({
     return false;
   };
 
-  const handleSubmitBtn = (value: "like" | "dislike") => {
+  const handleSubmitBtn = async (value: "like" | "dislike") => {
     if (submitComment == value) {
       setSubmitComment(null);
     } else {
       setSubmitComment(value);
+      let voteType: "0" | "1" = "0";
+      if (value == "like") {
+        voteType = "1";
+      }
+      await voteForCurrentSong({
+        room_key,
+        active_song_id,
+        vote_type: voteType || "0",
+      });
     }
   };
   return (
