@@ -68,3 +68,41 @@ export const checkRoomIsExist = async ({
     return Promise.reject(error);
   }
 };
+
+interface suggestSong {
+  room_key: string;
+  suggested_songs_id: string;
+  suggested_songs_img: string;
+}
+
+export const suggestSong = async ({
+  room_key,
+  suggested_songs_id,
+  suggested_songs_img,
+}: suggestSong): Promise<AxiosResponse> => {
+  try {
+    const res = await apiClient.post("suggestSong", {
+      room_key,
+      suggested_songs_id,
+      suggested_songs_img,
+    });
+    return res;
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+};
+
+export const voteForSuggestSong = async ({
+  room_key,
+  suggested_songs_id,
+}: Partial<suggestSong>): Promise<AxiosResponse> => {
+  try {
+    const res = await apiClient.post("suggestSongVote", {
+      room_key,
+      suggested_songs_id,
+    });
+    return res;
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+};

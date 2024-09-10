@@ -58,10 +58,24 @@ export default function PartyRoom() {
   return (
     <Box sx={{ padding: 2, backgroundColor: "#f0f4ff", minHeight: "100vh" }}>
       <Grid container spacing={2}>
-        {/* Current Song Section */}
-        <CurrentSongBox />
-        {/* Suggested Songs Section */}
-        {/* <SuggestedSongsBox /> */}
+        <CurrentSongBox songName="EGOT" likes={0} dislikes={0} imgUrl="sss" />
+        <SuggestedSongsBox
+          room_key="BSBCCI"
+          songs={[
+            {
+              active_song_id: "this new song1122",
+              active_song_img: "er",
+              likes: 0,
+              suggestedBy: "userTest",
+            },
+            {
+              active_song_id: "2sav",
+              active_song_img: "e12r",
+              likes: 22,
+              suggestedBy: "fdsuserTest",
+            },
+          ]}
+        />
         {/* Songs Queue Section */}
         {/* <SongsQueue /> */}
         {/* Suggest Song Section */}
