@@ -2,12 +2,12 @@ from rest_framework import generics,status,mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from api.authentication import CookieJWTAuthentication
-from api.serializers.suggested_songs_votes_serializer import Suggested_songs_votes_serializer
+from api.serializers.suggested_songs_votes_serializer import Suggested_songs_votes_serializer,Suggested_songs_votes_serializer_optional
 from api.models.suggestedSongsVotesModel import SuggestedSongsVotesModal
 from api.models.suggetedSongsModel import suggestedSongsModel
 from ..utils.userData import check_user_in_room_and_room_exist
 
-class suggestedSongsVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.GenericAPIView):
+class suggestedSongsVotesView(generics.CreateAPIView):
 
     queryset = SuggestedSongsVotesModal.objects.all()
     serializer_class = Suggested_songs_votes_serializer
@@ -42,3 +42,27 @@ class suggestedSongsVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, g
                     suggested_song_instance.likes+=1
                     suggested_song_instance.save()
                     return Response({"message":"added the vote!"}, status=status.HTTP_201_CREATED)
+
+class suggestedSongsUserVotesView(generics.ListAPIView):
+
+    queryset = SuggestedSongsVotesModal.objects.all()
+    serializer_class = Suggested_songs_votes_serializer
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get (self, request, *args, **kwargs):
+        user = request.user
+        room_key = request.GET.get('room_key')
+       
+        if room_key!=None:
+            check_user_in_room_and_room_exist(user,room_key)
+            song_user_votes_instance = SuggestedSongsVotesModal.objects.filter(room_key=room_key,username=user.username)
+            
+            if song_user_votes_instance:
+                return Response(Suggested_songs_votes_serializer(song_user_votes_instance, many=True).data,status=status.HTTP_200_OK)
+            else:
+                return Response({},status=status.HTTP_200_OK)
+
+
+
+           

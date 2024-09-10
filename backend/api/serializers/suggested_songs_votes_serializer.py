@@ -10,6 +10,5 @@ class Suggested_songs_votes_serializer(serializers.ModelSerializer):
             "username"
         ]
         extra_kwargs={
-            "username":{"required":False}
+            "username":{"required":False},
                     }
-
