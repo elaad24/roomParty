@@ -27,4 +27,7 @@ class suggestedSongsView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generi
                 suggest_instance.suggested_by=user.username
                 suggest_instance.save()
                 return Response({"message":"added to suggestions!"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message":"song already suggested"}, status=status.HTTP_400_BAD_REQUEST)
+
 
