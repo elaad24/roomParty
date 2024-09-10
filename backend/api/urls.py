@@ -4,6 +4,7 @@ from .views.authView import RefreshAccessTokenView
 from .views.roomView import CreateRoomView,JoinRoomView,getRoomInfo
 from .views.userVotesView import UserVotesView
 from .views.songsView import ChangeSong
+from .views.suggestedSongsView import suggestedSongsView
 
 urlpatterns = [
     path("createUser",CreateUserView.as_view(),name="create-user"),
@@ -14,5 +15,7 @@ urlpatterns = [
     path("changeSong",ChangeSong.as_view(),name="change-song"),
     path("isUserInRoom",CheckIfUserInRoom.as_view(),name="is-user-in-room"),
     path("getUserInfo",getUserInfo.as_view(),name="get-user-info"),
-    path("geRoomInfo/",getRoomInfo.as_view(),name="get-room-info")
+    path("geRoomInfo/",getRoomInfo.as_view(),name="get-room-info"),
+    path("suggestSong",suggestedSongsView.as_view(),name="suggest-song")
+
         ]
