@@ -5,6 +5,7 @@ from .views.roomView import CreateRoomView,JoinRoomView,getRoomInfo
 from .views.userVotesView import UserVotesView
 from .views.songsView import ChangeSong
 from .views.suggestedSongsView import suggestedSongsView
+from .views.suggestedSongsVotesView import suggestedSongsVotesView
 
 urlpatterns = [
     path("createUser",CreateUserView.as_view(),name="create-user"),
@@ -16,6 +17,6 @@ urlpatterns = [
     path("isUserInRoom",CheckIfUserInRoom.as_view(),name="is-user-in-room"),
     path("getUserInfo",getUserInfo.as_view(),name="get-user-info"),
     path("geRoomInfo/",getRoomInfo.as_view(),name="get-room-info"),
-    path("suggestSong",suggestedSongsView.as_view(),name="suggest-song")
-
+    path("suggestSong",suggestedSongsView.as_view(),name="suggest-song"),
+    path("suggestSongVote",suggestedSongsVotesView.as_view(),name="suggest-song-vote")
         ]

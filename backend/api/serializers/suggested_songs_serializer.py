@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from api.models.suggetedSongs import suggestedSongs
+from api.models.suggetedSongsModel import suggestedSongsModel
 class Suggested_songs_serializer(serializers.ModelSerializer):
     class Meta:
-        model = suggestedSongs
+        model = suggestedSongsModel
         fields = [
             "id",
             "room_key",
