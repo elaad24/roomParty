@@ -23,3 +23,17 @@ export function setCookie(
     value
   )}${expires}; path=${path}`;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+const debounce = (func: Function, delay: number) => {
+  let timeoutId: number; // Change to number
+
+  return (...args: any[]) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear the previous timeout
+    }
+    timeoutId = window.setTimeout(() => {
+      func(...args); // Call the function after the delay
+    }, delay);
+  };
+};
