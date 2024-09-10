@@ -2,7 +2,7 @@ from rest_framework import generics,status,mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from api.authentication import CookieJWTAuthentication
-from api.serializers.suggested_songs_votes_serializer import Suggested_songs_votes_serializer,Suggested_songs_votes_serializer_optional
+from api.serializers.suggested_songs_votes_serializer import Suggested_songs_votes_serializer
 from api.models.suggestedSongsVotesModel import SuggestedSongsVotesModal
 from api.models.suggetedSongsModel import suggestedSongsModel
 from ..utils.userData import check_user_in_room_and_room_exist
@@ -62,7 +62,3 @@ class suggestedSongsUserVotesView(generics.ListAPIView):
                 return Response(Suggested_songs_votes_serializer(song_user_votes_instance, many=True).data,status=status.HTTP_200_OK)
             else:
                 return Response({},status=status.HTTP_200_OK)
-
-
-
-           
