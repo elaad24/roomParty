@@ -60,6 +60,7 @@ export default function SuggestedSongsBox({
           {songs.map((song, index) => (
             <>
               <ListItem
+                key={song.active_song_id}
                 sx={{
                   display: "flex",
                   flexDirection: "column",
