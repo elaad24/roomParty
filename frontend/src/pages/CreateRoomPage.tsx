@@ -31,7 +31,7 @@ export default function CreateRoomPage() {
       votes_to_switch_type_is_num: true,
     });
     if (data.code !== null) {
-      navigation(`/room/${data.code}`);
+      navigation(`/partyRoom/${data.code}`);
     }
   };
 
