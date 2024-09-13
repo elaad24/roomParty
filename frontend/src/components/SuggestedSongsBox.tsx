@@ -56,11 +56,10 @@ export default function SuggestedSongsBox({
     <Grid>
       <Box sx={{ border: "1px dashed grey", padding: 2, borderRadius: 2 }}>
         <Typography variant="h6">Suggested Songs</Typography>
-        <List>
+        <List key={"listOfItems"}>
           {songs.map((song, index) => (
-            <>
+            <div key={song.active_song_id}>
               <ListItem
-                key={song.active_song_id}
                 sx={{
                   display: "flex",
                   flexDirection: "column",
@@ -105,7 +104,7 @@ export default function SuggestedSongsBox({
                 </Typography>
               </ListItem>
               {index < songs.length - 1 && <Divider />}
-            </>
+            </div>
           ))}
         </List>
       </Box>

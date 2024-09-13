@@ -16,8 +16,8 @@ urlpatterns = [
     path("changeSong",ChangeSong.as_view(),name="change-song"),
     path("isUserInRoom",CheckIfUserInRoom.as_view(),name="is-user-in-room"),
     path("getUserInfo",getUserInfo.as_view(),name="get-user-info"),
-    path("geRoomInfo/",getRoomInfo.as_view(),name="get-room-info"),
+    path("getRoomInfo/",getRoomInfo.as_view(),name="get-room-info"),
     path("suggestSong",suggestedSongsView.as_view(),name="suggest-song"),
     path("suggestSongVote",suggestedSongsVotesView.as_view(),name="suggest-song-vote"),
-    path("suggestSongUserVote/",suggestedSongsUserVotesView.as_view(),name="suggest-song-user-vote")
+    path("suggestSongUserVote/",suggestedSongsUserVotesView.as_view(),name="suggest-song-user-vote"),
         ]
