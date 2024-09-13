@@ -13,9 +13,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const run = async () => {
-      debugger;
       if (token_id && typeof token_id == "string") {
-        console.log("token_id from main", token_id);
         await setSpotifyUserName({ encryptedToken: token_id });
       }
 
