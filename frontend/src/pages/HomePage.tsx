@@ -1,16 +1,27 @@
 import React, { useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { checkUserInRoom } from "../api/userRequsets";
+import { setSpotifyUserName } from "../api/spotify";
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation(); // Access the URL
+  const queryParams = new URLSearchParams(location.search); // Parse the query parameters
+
+  const token_id = queryParams.get("token_id"); // Get the value of 'room_key'
 
   useEffect(() => {
     const run = async () => {
+      debugger;
+      if (token_id && typeof token_id == "string") {
+        console.log("token_id from main", token_id);
+        await setSpotifyUserName({ encryptedToken: token_id });
+      }
+
       const data = await checkUserInRoom();
       if (data.code !== null) {
-        navigate(`/room/${data.code}`);
+        navigate(`/partyRoom/${data.code}`);
       }
     };
     run();
