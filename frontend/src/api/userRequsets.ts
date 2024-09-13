@@ -1,6 +1,7 @@
 import axios from "axios";
 import apiClient from "./apiClient";
 import { AxiosResponse } from "axios";
+import { apiRoute } from "./url";
 
 interface userSignupInterface {
   username: string;
@@ -12,7 +13,7 @@ export const userSignup = async ({
   password,
 }: userSignupInterface) => {
   try {
-    const res = await apiClient.post(`createUser`, {
+    const res = await apiClient.post(`${apiRoute}createUser`, {
       username: username,
       password: password,
     });
@@ -31,7 +32,7 @@ interface UserInRoomResponse {
 export const checkUserInRoom = async (): Promise<UserInRoomResponse | any> => {
   try {
     const { data }: AxiosResponse<UserInRoomResponse> = await apiClient.get(
-      "isUserInRoom"
+      `${apiRoute}isUserInRoom`
     );
 
     return data;
@@ -51,7 +52,7 @@ export interface getUserInterfaceResponse {
 export const getUser = async (): Promise<getUserInterfaceResponse | any> => {
   try {
     const { data }: AxiosResponse<UserInRoomResponse> = await apiClient.get(
-      "getUserInfo"
+      `${apiRoute}getUserInfo`
     );
 
     return data;

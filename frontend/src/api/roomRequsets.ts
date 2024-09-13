@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import apiClient from "./apiClient";
+import { apiRoute } from "./url";
 
 interface createRoomProps {
   user_can_pass_songs: boolean;
@@ -22,7 +23,7 @@ export const createRoom = async ({
 }: createRoomProps): Promise<AxiosResponse<RoomResponse | any>> => {
   try {
     const response: AxiosResponse<RoomResponse> = await apiClient.post(
-      "createRoom",
+      `${apiRoute}createRoom`,
       {
         user_can_pass_songs,
         votes_to_switch_type_is_num,
@@ -43,7 +44,7 @@ export const joinRoom = async ({
   roomCode,
 }: joinRoomProps): Promise<AxiosResponse> => {
   try {
-    const res = await apiClient.post("joinRoom", {
+    const res = await apiClient.post(`${apiRoute}joinRoom`, {
       code: roomCode,
     });
     return res;
@@ -61,7 +62,7 @@ export const checkRoomIsExist = async ({
 }: checkRoomIsExist): Promise<RoomResponse | any> => {
   try {
     const response: AxiosResponse<RoomResponse> = await apiClient.get(
-      `geRoomInfo/room_key=${room_key}`
+      `${apiRoute}getRoomInfo/?room_key=${room_key}`
     );
     return response.data;
   } catch (error) {
@@ -80,7 +81,7 @@ export const voteForCurrentSong = async ({
   vote_type,
 }: Partial<voteForCurrentSong>): Promise<AxiosResponse> => {
   try {
-    const res = await apiClient.post("vote", {
+    const res = await apiClient.post(`${apiRoute}vote`, {
       room_key,
       active_song_id,
       vote_type,
@@ -103,7 +104,7 @@ export const suggestSong = async ({
   suggested_songs_img,
 }: suggestSong): Promise<AxiosResponse> => {
   try {
-    const res = await apiClient.post("suggestSong", {
+    const res = await apiClient.post(`${apiRoute}suggestSong`, {
       room_key,
       suggested_songs_id,
       suggested_songs_img,
@@ -119,7 +120,7 @@ export const voteForSuggestSong = async ({
   suggested_songs_id,
 }: Partial<suggestSong>): Promise<AxiosResponse> => {
   try {
-    const res = await apiClient.post("suggestSongVote", {
+    const res = await apiClient.post(`${apiRoute}suggestSongVote`, {
       room_key,
       suggested_songs_id,
     });
@@ -140,7 +141,7 @@ export const getUserVoteOnSuggestedSongs = async ({
 }: checkRoomIsExist): Promise<userSuggestSongsVotes[] | any> => {
   try {
     const response: AxiosResponse<RoomResponse> = await apiClient.get(
-      `suggestSongUserVote/?room_key=${room_key}`
+      `${apiRoute}suggestSongUserVote/?room_key=${room_key}`
     );
     return response.data;
   } catch (error) {
