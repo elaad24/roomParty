@@ -26,7 +26,8 @@ class UserVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.Ge
             UserVotesModel_instance=UserVotesModel.objects.filter(room_key=room_key_field_value , active_song_id=active_song_id_field_value, username=username).first()
             #there isn't instance - its a new vote 
             if not UserVotesModel_instance:
-               return self.create(request, *args, **kwargs)
+                UserVotesModel.objects.create(room_key=room_key_field_value,username=request.user.username,active_song_id=active_song_id_field_value,vote_type=vote_type_value)
+                return Response({},status=status.HTTP_201_CREATED)
             #there is a vote and its the save
             elif UserVotesModel_instance.vote_type==vote_type_value:
                 return Response({"message":"same vote already existing"},status=status.HTTP_200_OK)
