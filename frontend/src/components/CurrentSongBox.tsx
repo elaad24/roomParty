@@ -3,31 +3,30 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
+import { Card, CardMedia } from "@mui/material";
 
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { voteForCurrentSong } from "../api/roomRequsets";
+import { currentSongDataInterface } from "../pages/PartyRoom";
 
-export interface CurrentSongBoxProps {
+export interface currentSongDataInterfaceProps {
+  currentSongData: currentSongDataInterface;
   room_key: string;
-  songName: string;
-  active_song_id: string;
-  imgUrl: string;
-  likes: number;
-  dislikes: number;
 }
 
 export default function CurrentSongBox({
+  currentSongData: { title, artist, image_url, is_playing, id, like, dislike },
   room_key,
-  songName,
-  active_song_id,
-  imgUrl,
-  likes = 0,
-  dislikes = 0,
-}: CurrentSongBoxProps) {
+}: currentSongDataInterfaceProps) {
   const [submitComment, setSubmitComment] = useState<"like" | "dislike" | null>(
     null
   );
+
+  const active_song_id = id;
+  const songName = title;
+  const likes = like;
+  const dislikes = dislike;
 
   const ButtonChecker = (value: string) => {
     if (submitComment == null) return true;
@@ -69,10 +68,16 @@ export default function CurrentSongBox({
             height: 150,
             width: 150,
             backgroundColor: "#e0e0e0",
-            margin: "16px 0",
+            margin: "16px auto",
           }}
         >
-          <Typography>Song Image</Typography>
+          <Card>
+            <CardMedia
+              component="img"
+              image="https://i.scdn.co/image/ab67616d0000b273eaa10fffa60de320846c28be"
+              alt="Album Cover"
+            />
+          </Card>
         </Box>
         <Typography>Current Stats:</Typography>
         <Typography>Likes: {likes}</Typography>

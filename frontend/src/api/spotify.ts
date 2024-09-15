@@ -29,6 +29,7 @@ interface authenticateSpotifyProps {
   >;
 }
 
+// see that u got the full song dadta adn real votes
 export const authenticateSpotify = async ({
   spotifyAuthenticatedStateSetter,
 }: authenticateSpotifyProps) => {
@@ -51,6 +52,15 @@ export const setSpotifyUserName = async ({
     await apiClient.post(`${spotifyRoute}set-spotify-username`, {
       secret_token: encryptedToken,
     });
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getCurrentSong = async () => {
+  try {
+    const { data } = await apiClient.get(`${spotifyRoute}current-song`);
+    return data;
   } catch (error) {
     return Promise.reject(error);
   }
