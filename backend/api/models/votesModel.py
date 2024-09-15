@@ -15,6 +15,7 @@ class VotesModel(models.Model):
     request_to_change_genre= models.IntegerField(default=0)
     room_key=models.CharField(max_length=20, unique=True)
     active_song_id=models.CharField(max_length=100, default="")
+    active_song_name=models.CharField(max_length=100, default="")
     active_song_img=models.CharField(max_length=1000 , default="")
     active_song_artists=models.CharField(max_length=1000 , default="")
     active_song_is_playing=models.BooleanField( default=False)

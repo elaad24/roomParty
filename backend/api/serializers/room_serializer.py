@@ -13,6 +13,7 @@ class RoomSerializer(serializers.ModelSerializer):
                     "host",
                     "user_can_pass_songs",
                     "votes_to_switch_type_is_num",
+                    "active_song_name",
                     "votes_to_switch",
                     "active_song_img",
                     "active_song_id",

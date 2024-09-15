@@ -10,6 +10,7 @@ def updateRoomSongData(request, altered_data):
     room_key = data.get("room_key",None)
     active_song_id=data.get("active_song_id",None)
     active_song_img=data.get("active_song_img",None)
+    active_song_name=data.get("active_song_name",None)
     active_song_artists=data.get("active_song_artists",None)
     active_song_is_playing=data.get("active_song_is_playing",None)
         
@@ -18,6 +19,7 @@ def updateRoomSongData(request, altered_data):
     prev_active_song_id=room_instance.active_song_id
     if room_instance and request.user.username==room_instance.host:
         room_instance.active_song_id=active_song_id
+        room_instance.active_song_name=active_song_name
         room_instance.active_song_img=active_song_img
         room_instance.save()
     else:
@@ -35,6 +37,7 @@ def updateRoomSongData(request, altered_data):
         votesModelInstance.active_song_id=active_song_id
         votesModelInstance.active_song_img=active_song_img
         votesModelInstance.active_song_artists=active_song_artists
+        votesModelInstance.active_song_name=active_song_name
         votesModelInstance.active_song_is_playing=active_song_is_playing
         votesModelInstance.like=likes
         votesModelInstance.dislike=dislike

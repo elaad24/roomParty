@@ -64,10 +64,11 @@ class CurrentSong(APIView):
             
 
             altered_data["room_key"]=roomInstance.code
-            altered_data["active_song_id"]=item.get('name')
+            altered_data["active_song_id"]=song_id
             altered_data["active_song_img"]=album_cover
             altered_data["active_song_artists"]=artist_string
             altered_data["active_song_is_playing"]=is_playing
+            altered_data["active_song_name"]=item.get('name')
 
             updateRoomSongData(request,altered_data)
 
