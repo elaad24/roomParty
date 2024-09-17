@@ -8,19 +8,12 @@ interface spotifySearchProps {
 }
 
 export const spotifySearchItem = async ({ text }: spotifySearchProps) => {
-  const token = getCookie("spotifyAccessToken");
-  if (!token || token == null) {
-    console.log("error - not spotify access token ");
-    return;
+  const { data } = await apiClient.get(`${spotifyRoute}search-song?q=${text}`);
+  if (data) {
+    return data;
+  } else {
+    return Error("error in searching for song ");
   }
-  const response = await axios.get(
-    `https://api.spotify.com/v1/search?q=${text}&type=track%2Cartist%2Calbum&limit=10&offset=0&include_external=audio0`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
 };
 
 interface authenticateSpotifyProps {

@@ -6,5 +6,5 @@ urlpatterns = [
     path('is-Authenticated',IsAuthenticated.as_view()),
     path('set-spotify-username',set_spotify_username.as_view()),
     path('current-song',CurrentSong.as_view()),
-
+    path('search-song',SearchSong.as_view()),
 ]

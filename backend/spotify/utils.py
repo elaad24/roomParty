@@ -4,7 +4,7 @@ from datetime import timedelta
 from .credenials import CLIENT_ID ,CLIENT_SECRET
 from requests import post, put,get
 
-BASE_URL = "https://api.spotify.com/v1/me/"
+BASE_URL = "https://api.spotify.com/v1/"
 
 def update_or_create_user_token(username,refresh_token,access_token,token_type):
     expires_in=timezone.now()+timedelta(seconds=3600) #set the the expires is in 1 hour from now
@@ -83,6 +83,7 @@ def execute_spotify_api_request(room_host_username,endpoint, post_=False,put_=Fa
         post(BASE_URL + endpoint, headers=headers)
     if put_:
         put(BASE_URL + endpoint, headers=headers)
+    print(BASE_URL + endpoint)
     response = get(BASE_URL + endpoint, {}, headers=headers)
     try:
         return response.json()

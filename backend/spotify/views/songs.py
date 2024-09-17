@@ -17,6 +17,8 @@ from api.utils.roomSongUtils import updateRoomSongData
 from api.models.votesModel import VotesModel
 
 class CurrentSong(APIView):
+    authentication_classes=[CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request):
         user = request.user
@@ -33,7 +35,7 @@ class CurrentSong(APIView):
 
 
         if roomInstance !=None:
-            endpoint = "player/currently-playing"
+            endpoint = "me/player/currently-playing"
             response = execute_spotify_api_request(roomInstance.host,endpoint)
 
             if 'error' in response or "item" not in response:
