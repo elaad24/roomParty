@@ -28,9 +28,10 @@ class UserVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.Ge
             if not UserVotesModel_instance:
                 UserVotesModel.objects.create(room_key=room_key_field_value,username=request.user.username,active_song_id=active_song_id_field_value,vote_type=vote_type_value)
                 return Response({},status=status.HTTP_201_CREATED)
-            #there is a vote and its the save
+            #there is a vote and its the same - so it remove that comment 
             elif UserVotesModel_instance.vote_type==vote_type_value:
-                return Response({"message":"same vote already existing"},status=status.HTTP_200_OK)
+                UserVotesModel_instance.delete()
+                return Response({"message":"the vote has been deleted"},status=status.HTTP_202_ACCEPTED)
             #there is a vote and its not the same 
             elif UserVotesModel_instance and UserVotesModel_instance.vote_type!=vote_type_value:
                 UserVotesModel_instance.vote_type=vote_type_value
@@ -41,4 +42,10 @@ class UserVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.Ge
             return Response({"message":"error couldn't find the instance,user isn't in the room song id isn't active"},status=status.HTTP_400_BAD_REQUEST)
 
 
-   
+    def get(self, request, *args, **kwargs):
+        username = request.user.username
+        user_vote_instance= UserVotesModel.objects.filter(username=username).first()
+        if user_vote_instance==None:
+            return Response({"vote":None},status=status.HTTP_200_OK)
+        print(user_vote_instance)
+        return Response({"vote":user_vote_instance.vote_type,"active_song_id":user_vote_instance.active_song_id},status=status.HTTP_200_OK)
