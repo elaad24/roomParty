@@ -91,6 +91,14 @@ export const voteForCurrentSong = async ({
     return Promise.reject(error);
   }
 };
+export const getUserVote = async (): Promise<AxiosResponse> => {
+  try {
+    const res = await apiClient.get(`${apiRoute}vote`);
+    return res;
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+};
 
 interface suggestSong {
   room_key: string;
