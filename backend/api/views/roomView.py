@@ -74,7 +74,6 @@ class JoinRoomView(generics.ListAPIView):
         room_key= request.GET.get('room_key')
         if  room_key != None:
             room= RoomModel.objects.filter(code=room_key).first()
-            # print (room.is_active)
             if room != None and room.is_active ==True:
                 user = request.user
                 user.room=room_key 

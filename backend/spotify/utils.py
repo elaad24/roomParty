@@ -83,7 +83,6 @@ def execute_spotify_api_request(room_host_username,endpoint, post_=False,put_=Fa
         post(BASE_URL + endpoint, headers=headers)
     if put_:
         put(BASE_URL + endpoint, headers=headers)
-    print(BASE_URL + endpoint)
     response = get(BASE_URL + endpoint, {}, headers=headers)
     try:
         return response.json()

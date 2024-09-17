@@ -47,5 +47,4 @@ class UserVotesView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.Ge
         user_vote_instance= UserVotesModel.objects.filter(username=username).first()
         if user_vote_instance==None:
             return Response({"vote":None},status=status.HTTP_200_OK)
-        print(user_vote_instance)
         return Response({"vote":user_vote_instance.vote_type,"active_song_id":user_vote_instance.active_song_id},status=status.HTTP_200_OK)
