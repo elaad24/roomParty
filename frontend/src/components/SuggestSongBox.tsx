@@ -14,45 +14,51 @@ import { debounce, Stack } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import SendIcon from "@mui/icons-material/Send";
+import { spotifySearchItem } from "../api/spotify";
+import { currentSongDataInterface } from "../pages/PartyRoom";
+import AutocompleteOption from "./SongAutocompleteOption";
+import { suggestSong } from "../api/roomRequsets";
 
-interface Option {
-  label: string;
-  value: string;
+interface SuggestSongBox {
+  room_key: string;
 }
 
-const top100Films = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-  { label: "12 Angry Men", year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: "Pulp Fiction", year: 1994 },
-];
-
-export default function SuggestSongBox() {
+export default function SuggestSongBox({ room_key }: SuggestSongBox) {
   const [inputValue, setInputValue] = useState(""); // Stores the user input
-  const [userPicked, setUserPicked] = useState<string | undefined>(""); // Stores the user pick
-  // const [options, setOptions] = useState<Option[]>([]); // Options for the Autocomplete
-  const [options, setOptions] = useState<string>(""); // Options for the Autocomplete
+  const [userPicked, setUserPicked] = useState<
+    Partial<currentSongDataInterface> | undefined
+  >(undefined); // Stores the user pick
+  const [options, setOptions] = useState<Partial<currentSongDataInterface>[]>(
+    []
+  ); // Options for the Autocomplete
   const [loading, setLoading] = useState(false); // Loading state for async search
 
   // Function to fetch data from the API
   const fetchOptions = async (query: string) => {
     setLoading(true);
     try {
-      // const response = await axios.get(`/api/search?q=${query}`);
-      // const fetchedOptions = response.data.map((item: any) => ({
-      //   label: item.name, // Customize based on the response structure
-      //   value: item.id,
-      // }));
-      setOptions(query);
+      const data = await spotifySearchItem({ text: query });
+      if (data?.tracks) {
+        const organizedData = data.tracks.items.map((i) => {
+          return {
+            title: i.name,
+            artist: i.artists[0].name,
+            image_url: i.album.images[0].url,
+            is_playing: false,
+            id: i.id,
+          };
+        });
+        setOptions(organizedData);
+      }
     } catch (error) {
       console.error("Error fetching data", error);
     } finally {
       setLoading(false);
     }
   };
+
+  //! remove the doropdown when there is nothing
+  //! set the data from search into the search vals
 
   // Debounced version of the fetchOptions function
   const debouncedFetchOptions = useCallback(debounce(fetchOptions, 500), []);
@@ -62,22 +68,48 @@ export default function SuggestSongBox() {
     if (inputValue.length > 2) {
       debouncedFetchOptions(inputValue); // Use the debounced function
     } else {
-      setOptions([]); // Clear options if input length is too short
+      // setOptions([]); // Clear options if input length is too short
     }
   }, [inputValue, debouncedFetchOptions]);
+
+  const submitSongSuggestions = async () => {
+    const { data } = await suggestSong({
+      room_key: room_key,
+      title: userPicked!.title as string,
+      image_url: userPicked!.image_url as string,
+      id: userPicked!.id as string,
+    });
+  };
 
   return (
     <Box>
       <Stack direction={"row"} gap={"1rem"}>
         <Autocomplete
           sx={{ width: "15rem" }}
-          options={top100Films}
-          getOptionLabel={(option) => option.label} // Display the label in the dropdown
-          onInputChange={(event, newInputValue) => {
-            setInputValue(newInputValue); // Update input value as user types
+          filterOptions={(x) => x}
+          autoComplete
+          options={options}
+          getOptionLabel={(option) => {
+            return options.length > 0 ? (option.title as string) : "no data";
           }}
-          onChange={(e, v) => setUserPicked(v?.label)}
-          loading={loading} // Show loading spinner when data is being fetched
+          renderOption={(props, option) => {
+            const { key, ...optionProps } = props;
+
+            return (
+              <AutocompleteOption
+                key={key}
+                renderOptionsProps={optionProps}
+                imgSrc={option.image_url as string}
+                title={option.title as string}
+                subtitle={option.artist as string}
+              />
+            );
+          }}
+          onInputChange={(event, newInputValue) => {
+            setInputValue(newInputValue);
+          }}
+          onChange={(e, v) => setUserPicked(v)}
+          loading={loading}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -101,11 +133,11 @@ export default function SuggestSongBox() {
           )}
         />
         <Button
-          disabled={inputValue != "" ? false : true}
+          disabled={userPicked != undefined ? false : true}
           color="success"
           endIcon={<SendIcon />}
           variant="contained"
-          onClick={() => "dislike"}
+          onClick={() => submitSongSuggestions()}
         >
           Send
         </Button>{" "}

@@ -22,7 +22,6 @@ interface authenticateSpotifyProps {
   >;
 }
 
-// see that u got the full song dadta adn real votes
 export const authenticateSpotify = async ({
   spotifyAuthenticatedStateSetter,
 }: authenticateSpotifyProps) => {
