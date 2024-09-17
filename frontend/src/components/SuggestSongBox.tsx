@@ -1,15 +1,7 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import NativeSelect from "@mui/material/NativeSelect";
-import InputBase from "@mui/material/InputBase";
 import { debounce, Stack } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -57,9 +49,6 @@ export default function SuggestSongBox({ room_key }: SuggestSongBox) {
     }
   };
 
-  //! remove the doropdown when there is nothing
-  //! set the data from search into the search vals
-
   // Debounced version of the fetchOptions function
   const debouncedFetchOptions = useCallback(debounce(fetchOptions, 500), []);
 
@@ -68,7 +57,7 @@ export default function SuggestSongBox({ room_key }: SuggestSongBox) {
     if (inputValue.length > 2) {
       debouncedFetchOptions(inputValue); // Use the debounced function
     } else {
-      // setOptions([]); // Clear options if input length is too short
+      setOptions([]); // Clear options if input length is too s/hort
     }
   }, [inputValue, debouncedFetchOptions]);
 

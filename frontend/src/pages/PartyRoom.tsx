@@ -19,18 +19,34 @@ import CurrentSongBox from "../components/CurrentSongBox";
 import SuggestedSongsBox from "../components/SuggestedSongsBox";
 import SongsQueue from "../components/SongsQueue";
 import ConnectToSpotifybox from "../components/ConnectToSpotifybox";
+import SuggestSongBox from "../components/SuggestSongBox";
+import axios from "axios";
+import { authenticateSpotify, getCurrentSong } from "../api/spotify";
+
+export interface currentSongDataInterface {
+  title: string;
+  artist: string;
+  image_url: string;
+  is_playing: boolean;
+  id: string;
+  like: number;
+  dislike: number;
+}
 
 export default function PartyRoom() {
   const [roomInfo, setRoomInfo] = useState<RoomResponse | null>(null);
   const [userInfo, setUserInfo] = useState<RoomResponse | null>(null);
-
+  const [spotifyAuthenticated, setSpotifyAuthenticated] =
+    useState<boolean>(false);
+  const [currentSongData, setCurrentSongData] =
+    useState<currentSongDataInterface | null>(null);
   const navigate = useNavigate();
 
   //check the room exist
   // check the user in that room
 
   const returnToHomePage = () => {
-    navigate(`/}`);
+    navigate(`/`);
   };
   const { roomCode } = useParams();
 
@@ -44,17 +60,27 @@ export default function PartyRoom() {
       if (!roomData) {
         returnToHomePage();
       }
-      setRoomInfo(roomData);
-
       const userData = await getUser();
       if (userData.room !== roomData.code) {
         returnToHomePage();
+      } else {
+        //check that the user is the host - so it will connect him to spotify
+        if (roomData.host == userData.username) {
+          await authenticateSpotify({
+            spotifyAuthenticatedStateSetter: setSpotifyAuthenticated,
+          });
+        }
       }
+      const data = await getCurrentSong();
+      setCurrentSongData(data);
+      console.log("datatttttt", data);
+
       setUserInfo(userData);
     };
-    // run();
+    run();
 
     //! continuew
+    // implemnt and connect he adde song to suggestions
     // implemnt getting the data from the back for hte suggested songs
   }, []);
 
@@ -62,12 +88,20 @@ export default function PartyRoom() {
     <Box sx={{ padding: 2, backgroundColor: "#f0f4ff", minHeight: "100vh" }}>
       <Grid container spacing={2}>
         <CurrentSongBox
-          room_key={"BSBCCI"}
-          active_song_id={"def"}
-          songName="EGOT"
-          likes={0}
-          dislikes={0}
-          imgUrl="sss"
+          room_key={roomCode ? roomCode : "0"}
+          currentSongData={
+            currentSongData
+              ? currentSongData
+              : {
+                  title: "",
+                  artist: "",
+                  image_url: "",
+                  is_playing: false,
+                  id: "",
+                  like: 0,
+                  dislike: 0,
+                }
+          }
         />
         <SuggestedSongsBox
           room_key="BSBCCI"
@@ -88,10 +122,10 @@ export default function PartyRoom() {
         />
         {/* Songs Queue Section */}
         {/* <SongsQueue /> */}
+        <SuggestSongBox room_key={roomCode as string} />
         {/* Suggest Song Section */}
-        {/* <SuggestedSongsBox /> */}
         {/* Connect with Spotify Section */}
-        {/* <ConnectToSpotifybox /> */}{" "}
+        {/* <ConnectToSpotifybox /> */}
       </Grid>
     </Box>
   );
