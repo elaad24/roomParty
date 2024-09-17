@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import apiClient from "./apiClient";
 import { apiRoute } from "./url";
+import { currentSongDataInterface } from "../pages/PartyRoom";
 
 interface createRoomProps {
   user_can_pass_songs: boolean;
@@ -106,16 +107,26 @@ interface suggestSong {
   suggested_songs_img: string;
 }
 
+interface suggestSongForRoom
+  extends Omit<
+    currentSongDataInterface,
+    "is_playing" | "like" | "dislike" | "artist"
+  > {
+  room_key: string;
+}
+
 export const suggestSong = async ({
   room_key,
-  suggested_songs_id,
-  suggested_songs_img,
-}: suggestSong): Promise<AxiosResponse> => {
+  title,
+  image_url,
+  id,
+}: suggestSongForRoom): Promise<AxiosResponse> => {
   try {
     const res = await apiClient.post(`${apiRoute}suggestSong`, {
       room_key,
-      suggested_songs_id,
-      suggested_songs_img,
+      suggested_song_title: title,
+      suggested_songs_img: image_url,
+      suggested_songs_id: id,
     });
     return res;
   } catch (error: any) {

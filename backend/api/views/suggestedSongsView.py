@@ -15,17 +15,17 @@ class suggestedSongsView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generi
     def post(self, request, *args, **kwargs):
         serializer = Suggested_songs_serializer(data=request.data)
         user = request.user
+
         if serializer.is_valid():
             room_key = serializer.validated_data.get("room_key",None)
             suggested_songs_id = serializer.validated_data.get("suggested_songs_id",None)
-            
             check_user_in_room_and_room_exist(user,room_key)
 
             isTheSongAlreadySuggested = suggestedSongsModel.objects.filter(room_key=room_key,suggested_songs_id=suggested_songs_id).first()
             if isTheSongAlreadySuggested == None:
+                validated_data = serializer.validated_data
+                validated_data["suggested_by"]=user.username
                 suggest_instance =  serializer.save()
-                suggest_instance.suggested_by=user.username
-                suggest_instance.save()
                 return Response({"message":"added to suggestions!"}, status=status.HTTP_201_CREATED)
             else:
                 return Response({"message":"song already suggested"}, status=status.HTTP_400_BAD_REQUEST)

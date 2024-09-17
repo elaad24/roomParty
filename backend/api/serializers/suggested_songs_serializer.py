@@ -8,6 +8,7 @@ class Suggested_songs_serializer(serializers.ModelSerializer):
             "room_key",
             "suggested_songs_id",
             "suggested_songs_img",
+            "suggested_song_title",
             "likes"
             ]
         extra_kwargs={
