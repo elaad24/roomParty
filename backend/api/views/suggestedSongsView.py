@@ -5,6 +5,7 @@ from api.authentication import CookieJWTAuthentication
 from api.serializers.suggested_songs_serializer import Suggested_songs_serializer
 from api.models.suggetedSongsModel import suggestedSongsModel
 from api.utils.userData import check_user_in_room_and_room_exist
+from api.models.customUserModel import CustomUserModel
 
 class suggestedSongsView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = suggestedSongsModel.objects.all()
@@ -31,3 +32,10 @@ class suggestedSongsView(mixins.CreateModelMixin,mixins.UpdateModelMixin, generi
                 return Response({"message":"song already suggested"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_instance= CustomUserModel.objects.filter(username=user.username).first()
+        suggested_song_room_instance = suggestedSongsModel.objects.filter(room_key=user_instance.room)
+        if suggested_song_room_instance != None:
+            return Response({"data":Suggested_songs_serializer(suggested_song_room_instance,many=True).data},status=status.HTTP_200_OK)        
+        return Response({"message":"didnt find items"},status=status.HTTP_400_BAD_REQUEST)

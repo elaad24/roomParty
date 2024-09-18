@@ -133,6 +133,14 @@ export const suggestSong = async ({
     return Promise.reject(error);
   }
 };
+export const getSuggestedSongs = async (): Promise<AxiosResponse> => {
+  try {
+    const res = await apiClient.get(`${apiRoute}suggestSong`);
+    return res;
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+};
 
 export const voteForSuggestSong = async ({
   room_key,

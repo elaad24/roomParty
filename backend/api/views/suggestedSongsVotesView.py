@@ -27,7 +27,7 @@ class suggestedSongsVotesView(generics.CreateAPIView):
             # check that the songs that the user tring to vote for is exist in the suggestion for the room
             suggested_song_instance = suggestedSongsModel.objects.filter(room_key=room_key,suggested_songs_id=suggested_songs_id).first()
             if(suggested_song_instance):
-                # try to find if the user already voted on this 
+                # try to find if the user already voted on this song
                 song_user_votes_instance = SuggestedSongsVotesModal.objects.filter(room_key=room_key,suggested_songs_id=suggested_songs_id,username=user.username).first()
                 
                 if(song_user_votes_instance):

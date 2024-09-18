@@ -11,44 +11,30 @@ import {
   userSuggestSongsVotes,
   voteForSuggestSong,
 } from "../api/roomRequsets";
-
-interface suggestedSong {
-  suggestedBy: string;
-  active_song_id: string;
-  active_song_img: string;
-  likes: number;
-}
+import { suggestedSongsInterface } from "../pages/PartyRoom";
 
 interface suggestedSongsProps {
   room_key: string;
-  songs: suggestedSong[];
+  songs: suggestedSongsInterface[] | null;
 }
 export default function SuggestedSongsBox({
   room_key,
   songs,
 }: suggestedSongsProps) {
-  const [userVotesData, setUserVotesData] = useState<
-    userSuggestSongsVotes[] | null
-  >(null);
+  const [userVotesData, setUserVotesData] = useState<any[] | null>(null);
 
   useEffect(() => {
+    const getData = async () => {
+      const data = await getUserVoteOnSuggestedSongs({ room_key });
+      setUserVotesData(data);
+    };
+
     getData();
   }, []);
 
-  const getData = async () => {
-    const data = await getUserVoteOnSuggestedSongs({ room_key });
-    if (data.length) {
-      setUserVotesData(data);
-    } else {
-      setUserVotesData(null);
-    }
-  };
-
   const handelPress = async (suggested_songs_id: string) => {
-    // need to build a function that retrive all of the votes for suggestoin for songs
     try {
       await voteForSuggestSong({ room_key, suggested_songs_id });
-      await getData();
     } catch (error) {}
   };
 
@@ -56,57 +42,90 @@ export default function SuggestedSongsBox({
     <Grid>
       <Box sx={{ border: "1px dashed grey", padding: 2, borderRadius: 2 }}>
         <Typography variant="h6">Suggested Songs</Typography>
-        <List key={"listOfItems"}>
-          {songs.map((song, index) => (
-            <div key={song.active_song_id}>
-              <ListItem
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  width={"100%"}
-                  gap={"1rem"}
-                >
-                  <Stack direction={"column"}>
-                    <Typography>suggetedby:{song.suggestedBy}</Typography>
-                    <Typography>song: {song.active_song_id}</Typography>
-                  </Stack>
-                  <Button
-                    onClick={() => handelPress(song.active_song_id)}
-                    variant={
-                      userVotesData?.some(
-                        (i) => i.suggested_songs_id == song.active_song_id
-                      )
-                        ? "contained"
-                        : "outlined"
-                    }
-                    sx={{ marginLeft: "auto" }}
-                  >
-                    {userVotesData?.some(
-                      (i) => i.suggested_songs_id == song.active_song_id
-                    )
-                      ? "Liked"
-                      : "Like"}
-                  </Button>
-                </Stack>
-                <Typography
+        {songs?.length ? (
+          <List
+            key={"listOfItems"}
+            sx={{ maxHeight: "55vh", overflowY: "auto" }}
+          >
+            {songs.map((song, index) => (
+              <div key={song.suggested_songs_id}>
+                <ListItem
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    alignSelf: "center",
                   }}
                 >
-                  liked:{song.likes}
-                </Typography>
-              </ListItem>
-              {index < songs.length - 1 && <Divider />}
-            </div>
-          ))}
-        </List>
+                  <Stack
+                    direction="row"
+                    gap="1rem"
+                    width="100%"
+                    maxWidth="22rem"
+                  >
+                    <Box
+                      component="img"
+                      src={song.suggested_songs_img}
+                      alt="song album photo"
+                      sx={{
+                        width: 75,
+                        height: 75,
+                        borderRadius: 5,
+                        objectFit: "cover",
+                      }}
+                    />
+                    <Stack
+                      direction={"row"}
+                      justifyContent={"space-between"}
+                      width={"100%"}
+                      gap={"1rem"}
+                    >
+                      <Stack direction={"column"}>
+                        <Typography>suggetedby: {song.suggested_by}</Typography>
+                        <Typography>
+                          song: {song.suggested_song_title}
+                        </Typography>
+                      </Stack>
+                      <Button
+                        onClick={() => handelPress(song.suggested_songs_id)}
+                        variant={
+                          userVotesData?.some(
+                            (i) =>
+                              i.suggested_songs_id == song.suggested_songs_id
+                          )
+                            ? "contained"
+                            : "outlined"
+                        }
+                        sx={{
+                          marginLeft: "auto",
+                          width: "min-content",
+                          height: "min-content",
+                          alignSelf: "center",
+                        }}
+                      >
+                        {userVotesData?.some(
+                          (i) => i.suggested_songs_id == song.suggested_songs_id
+                        )
+                          ? "Liked"
+                          : "Like"}
+                      </Button>
+                    </Stack>
+                  </Stack>
+                  <Typography
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignSelf: "center",
+                    }}
+                  >
+                    liked:{song.likes}
+                  </Typography>
+                </ListItem>
+                {index < songs.length - 1 && <Divider />}
+              </div>
+            ))}
+          </List>
+        ) : (
+          <Typography>no suggested Songs</Typography>
+        )}
       </Box>
     </Grid>
   );
