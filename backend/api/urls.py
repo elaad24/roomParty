@@ -6,6 +6,7 @@ from .views.userVotesView import UserVotesView
 from .views.songsView import ChangeSong
 from .views.suggestedSongsView import suggestedSongsView
 from .views.suggestedSongsVotesView import suggestedSongsVotesView,suggestedSongsUserVotesView
+from .views.songsQueueView import songQueueView
 
 urlpatterns = [
     path("createUser",CreateUserView.as_view(),name="create-user"),
@@ -20,4 +21,5 @@ urlpatterns = [
     path("suggestSong",suggestedSongsView.as_view(),name="suggest-song"),
     path("suggestSongVote",suggestedSongsVotesView.as_view(),name="suggest-song-vote"),
     path("suggestSongUserVote/",suggestedSongsUserVotesView.as_view(),name="suggest-song-user-vote"),
+    path("songsQueue/",songQueueView.as_view(),name="songs-queue"),
         ]
