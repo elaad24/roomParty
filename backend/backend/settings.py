@@ -65,7 +65,6 @@ INSTALLED_APPS = [
     'spotify',]
 
 AUTH_USER_MODEL="api.customUserModel"
-print("CORS Middleware Active")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
