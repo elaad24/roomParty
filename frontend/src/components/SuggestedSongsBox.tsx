@@ -26,7 +26,11 @@ export default function SuggestedSongsBox({
   useEffect(() => {
     const getData = async () => {
       const data = await getUserVoteOnSuggestedSongs({ room_key });
-      setUserVotesData(data);
+      if (Object.keys(data).length) {
+        setUserVotesData(data);
+      } else {
+        setUserVotesData([]);
+      }
     };
 
     getData();
@@ -87,7 +91,7 @@ export default function SuggestedSongsBox({
                       <Button
                         onClick={() => handelPress(song.suggested_songs_id)}
                         variant={
-                          userVotesData?.some(
+                          userVotesData.some(
                             (i) =>
                               i.suggested_songs_id == song.suggested_songs_id
                           )
@@ -101,11 +105,14 @@ export default function SuggestedSongsBox({
                           alignSelf: "center",
                         }}
                       >
-                        {userVotesData?.some(
-                          (i) => i.suggested_songs_id == song.suggested_songs_id
-                        )
-                          ? "Liked"
-                          : "Like"}
+                        {userVotesData
+                          ? userVotesData?.some(
+                              (i) =>
+                                i.suggested_songs_id == song.suggested_songs_id
+                            )
+                            ? "Liked"
+                            : "Like"
+                          : "like"}
                       </Button>
                     </Stack>
                   </Stack>

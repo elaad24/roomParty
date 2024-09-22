@@ -2,7 +2,6 @@ from api.authentication import CookieJWTAuthentication
 from api.models.customUserModel import CustomUserModel
 from api.models.suggetedSongsModel import suggestedSongsModel
 from api.serializers.suggested_songs_serializer import Suggested_songs_serializer
-from api.utils.songQueueUtils import add_song_to_queue
 from api.utils.userData import check_user_in_room_and_room_exist
 from rest_framework import generics, mixins, status
 from rest_framework.permissions import IsAuthenticated
@@ -47,7 +46,6 @@ class suggestedSongsView(
     def get(self, request, *args, **kwargs):
         user = request.user
         user_instance = CustomUserModel.objects.filter(username=user.username).first()
-        add_song_to_queue(request, user_instance.room)
 
         suggested_song_room_instance = suggestedSongsModel.objects.filter(
             room_key=user_instance.room
