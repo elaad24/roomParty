@@ -54,13 +54,13 @@ export const joinRoom = async ({
   }
 };
 
-interface checkRoomIsExist {
+interface roomKeyInterface {
   room_key: string;
 }
 
 export const checkRoomIsExist = async ({
   room_key,
-}: checkRoomIsExist): Promise<RoomResponse | any> => {
+}: roomKeyInterface): Promise<RoomResponse | any> => {
   try {
     const response: AxiosResponse<RoomResponse> = await apiClient.get(
       `${apiRoute}getRoomInfo/?room_key=${room_key}`
@@ -165,10 +165,30 @@ export interface userSuggestSongsVotes {
 
 export const getUserVoteOnSuggestedSongs = async ({
   room_key,
-}: checkRoomIsExist): Promise<userSuggestSongsVotes[] | any> => {
+}: roomKeyInterface): Promise<userSuggestSongsVotes[] | any> => {
   try {
     const response: AxiosResponse<RoomResponse> = await apiClient.get(
       `${apiRoute}suggestSongUserVote/?room_key=${room_key}`
+    );
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export interface roomSongsQueueInterface {
+  id: number;
+  room_key: string;
+  songs_id: string;
+  song_title: string;
+  songs_img: string;
+}
+export const getRoomSongsQueue = async (): Promise<
+  roomSongsQueueInterface[] | any
+> => {
+  try {
+    const response: AxiosResponse<RoomResponse> = await apiClient.get(
+      `${apiRoute}songsQueue`
     );
     return response.data;
   } catch (error) {

@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { checkUserInRoom, getUser } from "../api/userRequsets";
+import { getUser } from "../api/userRequsets";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkRoomIsExist, RoomResponse } from "../api/roomRequsets";
 import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  List,
-  ListItem,
-  IconButton,
-} from "@mui/material";
-import Grid from "@mui/material/Grid2";
+  checkRoomIsExist,
+  getRoomSongsQueue,
+  getSuggestedSongs,
+  RoomResponse,
+  roomSongsQueueInterface,
+} from "../api/roomRequsets";
 
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import Grid from "@mui/material/Grid2";
+import Box from "@mui/material/Box";
 import CurrentSongBox from "../components/CurrentSongBox";
 import SuggestedSongsBox from "../components/SuggestedSongsBox";
 import SongsQueue from "../components/SongsQueue";
-import ConnectToSpotifybox from "../components/ConnectToSpotifybox";
 import SuggestSongBox from "../components/SuggestSongBox";
-import axios from "axios";
 import { authenticateSpotify, getCurrentSong } from "../api/spotify";
 
 export interface currentSongDataInterface {
@@ -33,6 +27,16 @@ export interface currentSongDataInterface {
   dislike: number;
 }
 
+export interface suggestedSongsInterface {
+  id: number;
+  likes: number;
+  room_key: string;
+  suggested_song_title: string;
+  suggested_songs_id: string;
+  suggested_songs_img: string;
+  suggested_by: string;
+}
+
 export default function PartyRoom() {
   const [roomInfo, setRoomInfo] = useState<RoomResponse | null>(null);
   const [userInfo, setUserInfo] = useState<RoomResponse | null>(null);
@@ -40,10 +44,14 @@ export default function PartyRoom() {
     useState<boolean>(false);
   const [currentSongData, setCurrentSongData] =
     useState<currentSongDataInterface | null>(null);
-  const navigate = useNavigate();
+  const [suggestedSongs, setSuggestedSongs] = useState<
+    suggestedSongsInterface[] | null
+  >(null);
+  const [roomSongsQueue, setRoomSongsQueue] = useState<
+    roomSongsQueueInterface[] | null
+  >(null);
 
-  //check the room exist
-  // check the user in that room
+  const navigate = useNavigate();
 
   const returnToHomePage = () => {
     navigate(`/`);
@@ -73,15 +81,23 @@ export default function PartyRoom() {
       }
       const data = await getCurrentSong();
       setCurrentSongData(data);
-      console.log("datatttttt", data);
 
       setUserInfo(userData);
+
+      const suggestedSongsData = await getSuggestedSongs();
+      console.log("suggestedSongsData.data.data", suggestedSongsData);
+
+      setSuggestedSongs(suggestedSongsData.data.data);
+
+      const roomSongsQueue = await getRoomSongsQueue();
+      console.log("roomSongsQueue", roomSongsQueue);
+
+      setRoomSongsQueue(roomSongsQueue.data);
     };
     run();
 
     //! continuew
-    // implemnt and connect he adde song to suggestions
-    // implemnt getting the data from the back for hte suggested songs
+    //implement song queeu in front and back
   }, []);
 
   return (
@@ -104,24 +120,25 @@ export default function PartyRoom() {
           }
         />
         <SuggestedSongsBox
-          room_key="BSBCCI"
-          songs={[
-            {
-              active_song_id: "this new song1122",
-              active_song_img: "er",
-              likes: 0,
-              suggestedBy: "userTest",
-            },
-            {
-              active_song_id: "2sav",
-              active_song_img: "e12r",
-              likes: 22,
-              suggestedBy: "fdsuserTest",
-            },
-          ]}
+          room_key={roomCode ? roomCode : ""}
+          songs={suggestedSongs}
         />
         {/* Songs Queue Section */}
-        {/* <SongsQueue /> */}
+        <SongsQueue
+          queue={
+            roomSongsQueue
+              ? roomSongsQueue
+              : [
+                  {
+                    id: 0,
+                    room_key: "",
+                    songs_id: "",
+                    song_title: "",
+                    songs_img: "",
+                  },
+                ]
+          }
+        />
         <SuggestSongBox room_key={roomCode as string} />
         {/* Suggest Song Section */}
         {/* Connect with Spotify Section */}
