@@ -45,9 +45,7 @@ export const joinRoom = async ({
   roomCode,
 }: joinRoomProps): Promise<AxiosResponse> => {
   try {
-    const res = await apiClient.post(`${apiRoute}joinRoom`, {
-      code: roomCode,
-    });
+    const res = await apiClient.get(`${apiRoute}joinRoom?room_key=${roomCode}`);
     return res;
   } catch (error: any) {
     return Promise.reject(error);
@@ -195,3 +193,5 @@ export const getRoomSongsQueue = async (): Promise<
     return Promise.reject(error);
   }
 };
+
+export const sseUrl = "http://localhost:8000/api/sse";
