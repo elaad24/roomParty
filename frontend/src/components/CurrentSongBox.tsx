@@ -8,16 +8,21 @@ import { Card, CardMedia } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { getUserVote, voteForCurrentSong } from "../api/roomRequsets";
-import { currentSongDataInterface } from "../pages/PartyRoom";
+import {
+  currentSongDataInterface,
+  currentSongVoteInterface,
+} from "../pages/PartyRoom";
 
 export interface currentSongDataInterfaceProps {
   currentSongData: currentSongDataInterface;
   room_key: string;
+  currentSongVotes: currentSongVoteInterface | null;
 }
 
 export default function CurrentSongBox({
   currentSongData: { title, artist, image_url, is_playing, id, like, dislike },
   room_key,
+  currentSongVotes,
 }: currentSongDataInterfaceProps) {
   const [submitComment, setSubmitComment] = useState<"like" | "dislike" | null>(
     null
@@ -63,8 +68,8 @@ export default function CurrentSongBox({
   };
   const active_song_id = id;
   const songName = title;
-  const likes = like;
-  const dislikes = dislike;
+  const likes = currentSongVotes?.like || like;
+  const dislikes = currentSongVotes?.dislike || dislike;
 
   const handleSubmitBtn = async (value: "like" | "dislike") => {
     let voteType: "0" | "1" = "0";

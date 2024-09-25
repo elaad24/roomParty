@@ -17,11 +17,19 @@ interface suggestedSongsProps {
   room_key: string;
   songs: suggestedSongsInterface[] | null;
 }
+
+interface userVotesData {
+  room_key: string;
+  suggested_songs_id: string;
+  username: string;
+}
 export default function SuggestedSongsBox({
   room_key,
   songs,
 }: suggestedSongsProps) {
-  const [userVotesData, setUserVotesData] = useState<any[] | null>(null);
+  const [userVotesData, setUserVotesData] = useState<userVotesData[] | null>(
+    null
+  );
 
   useEffect(() => {
     const getData = async () => {
@@ -38,6 +46,26 @@ export default function SuggestedSongsBox({
 
   const handelPress = async (suggested_songs_id: string) => {
     try {
+      if (
+        userVotesData.some((i) => i.suggested_songs_id == suggested_songs_id)
+      ) {
+        console.log("it is true ", suggested_songs_id, "in userVoreData");
+
+        setUserVotesData((prev) =>
+          prev?.filter((i) => i.suggested_songs_id == suggested_songs_id)
+        );
+      } else {
+        console.log("no ", suggested_songs_id, " not in userVoreData");
+
+        setUserVotesData((prev) => [
+          ...prev,
+          {
+            room_key: prev[0].room_key,
+            suggested_songs_id: suggested_songs_id,
+            username: prev[0].username,
+          },
+        ]);
+      }
       await voteForSuggestSong({ room_key, suggested_songs_id });
     } catch (error) {}
   };

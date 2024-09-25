@@ -7,6 +7,7 @@ import {
   getSuggestedSongs,
   RoomResponse,
   roomSongsQueueInterface,
+  sseUrl,
 } from "../api/roomRequsets";
 
 import Grid from "@mui/material/Grid2";
@@ -23,6 +24,12 @@ export interface currentSongDataInterface {
   image_url: string;
   is_playing: boolean;
   id: string;
+  like: number;
+  dislike: number;
+}
+
+export interface currentSongVoteInterface {
+  active_song_id: string;
   like: number;
   dislike: number;
 }
@@ -44,6 +51,8 @@ export default function PartyRoom() {
     useState<boolean>(false);
   const [currentSongData, setCurrentSongData] =
     useState<currentSongDataInterface | null>(null);
+  const [currentSongVote, setCurrentSongVote] =
+    useState<currentSongVoteInterface | null>(null);
   const [suggestedSongs, setSuggestedSongs] = useState<
     suggestedSongsInterface[] | null
   >(null);
@@ -57,6 +66,13 @@ export default function PartyRoom() {
     navigate(`/`);
   };
   const { roomCode } = useParams();
+  const eventType = {
+    VotesModel: "VotesModel",
+    UserVotesModel: "UserVotesModel",
+    SuggestedSongsVotesModal: "SuggestedSongsVotesModal",
+    suggestedSongsModel: "suggestedSongsModel",
+    SongsQueueModel: "SongsQueueModel",
+  };
 
   useEffect(() => {
     const run = async () => {
@@ -85,19 +101,95 @@ export default function PartyRoom() {
       setUserInfo(userData);
 
       const suggestedSongsData = await getSuggestedSongs();
-      console.log("suggestedSongsData.data.data", suggestedSongsData);
+      // console.log("suggestedSongsData.data.data", suggestedSongsData);
 
       setSuggestedSongs(suggestedSongsData.data.data);
 
       const roomSongsQueue = await getRoomSongsQueue();
-      console.log("roomSongsQueue", roomSongsQueue);
+      // console.log("roomSongsQueue", roomSongsQueue);
 
       setRoomSongsQueue(roomSongsQueue.data);
     };
+    console.log("befor call");
+
+    const eventSource = new EventSource("http://localhost:8000/api/sse", {
+      withCredentials: true,
+    });
+    // const eventSource = new EventSource(sseUrl, { withCredentials: true });
+    console.log("after call");
+
+    eventSource.onmessage = (event: MessageEvent) => {
+      console.log("Generic event received: ", event.data);
+    };
+
+    eventSource.onmessage = function (event) {
+      console.log("Message:", event.data);
+      const messageType = JSON.parse(event.data).event_type;
+
+      if (messageType == "VotesModel") {
+        const data = JSON.parse(event.data).data.VotesModel;
+        console.log("Data", typeof data, data);
+        setCurrentSongVote({
+          active_song_id: data.active_song_id,
+          like: data.like,
+          dislike: data.dislike,
+        });
+      } else if (messageType == "UserVotesModel") {
+        //! continuew
+        // implemnt the animations
+      } else if (messageType == "SuggestedSongsVotesModal") {
+        //! continuew
+        // implemnt the animations
+      } else if (messageType == "suggestedSongsModel") {
+        // implemnt the animations
+
+        const data = JSON.parse(event.data).data.suggestedSongsModel;
+        console.log("Data", typeof data, data);
+
+        setSuggestedSongs(
+          data.all_data.map((i: suggestedSongsInterface) => {
+            return {
+              id: i.id,
+              likes: i.likes,
+              room_key: i.room_key,
+              suggested_song_title: i.suggested_song_title,
+              suggested_songs_id: i.suggested_songs_id,
+              suggested_songs_img: i.suggested_songs_img,
+              suggested_by: i.suggested_by,
+            };
+          })
+        );
+      } else if (messageType == "SongsQueueModel") {
+        const data = JSON.parse(event.data).data;
+        console.log("Data", typeof data, data);
+        setRoomSongsQueue(
+          data.SongsQueueModel.map((i: roomSongsQueueInterface) => {
+            return {
+              id: i.id,
+              room_key: i.room_key,
+              songs_id: i.songs_id,
+              song_title: i.song_title,
+              songs_img: i.songs_img,
+            };
+          })
+        );
+      }
+    };
+
+    eventSource.onerror = function (event) {
+      console.error("Error:", event);
+      eventSource.close();
+    };
+
     run();
 
+    return () => {
+      eventSource.close();
+    };
     //! continuew
-    //implement song queeu in front and back
+    // make it better the live conection for the front
+    // implemnt the animations
+    // implemt that when song change it notidift the server
   }, []);
 
   return (
@@ -118,6 +210,7 @@ export default function PartyRoom() {
                   dislike: 0,
                 }
           }
+          currentSongVotes={currentSongVote}
         />
         <SuggestedSongsBox
           room_key={roomCode ? roomCode : ""}
