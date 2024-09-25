@@ -11,6 +11,8 @@ from .serializers.suggested_songs_serializer import Suggested_songs_serializer
 from .serializers.suggested_songs_votes_serializer import (
     Suggested_songs_votes_serializer,
 )
+from .serializers.userVotes_serializer import UserVotesSerializer
+from .utils.currentVotes import get_current_votes
 from .utils.songQueueUtils import add_song_to_queue
 from .utils.sseDataFunction import send_event_to_group
 from .utils.updateVoteCountSignal import (
@@ -69,37 +71,33 @@ def trigger_sse(sender, instance, **kwargs):
     model_name = sender.__name__
     modal_type = ""
     data_to_pass = ""
-    data = {modal_type: data_to_pass}
     modal_type = model_name
 
     if model_name == "VotesModel":
         # replace the old data
-        data_to_pass = instance
+        print("room_key", instance.room_key)
+        if instance.room_key == "":
+            return
+        data_to_pass = get_current_votes(instance.room_key)
 
     elif model_name == "UserVotesModel":
         #  get the new data only
-        data_to_pass = instance
+        data_to_pass = UserVotesSerializer(instance).data
 
     elif model_name == "SuggestedSongsVotesModal":
-        # replace the old data
         # get only the current data  the new data
         suggested_song_votes_instance = SuggestedSongsVotesModal.objects.filter(
             room_key=room_key
         )
 
         if suggested_song_votes_instance:
-            data_to_pass = {
-                "all_data": Suggested_songs_votes_serializer(
-                    suggested_song_votes_instance, many=True
-                ).data,
-                "the_new_instance": instance,
-            }
+            data_to_pass = (Suggested_songs_votes_serializer(instance).data,)
+
         else:
             data_to_pass = None
 
     elif model_name == "suggestedSongsModel":
         # replace the old data
-        # ? maybe to add the current data as well for displacing
         suggested_song_room_instance = suggestedSongsModel.objects.filter(
             room_key=room_key
         ).order_by("-likes")
@@ -108,7 +106,7 @@ def trigger_sse(sender, instance, **kwargs):
                 "all_data": Suggested_songs_serializer(
                     suggested_song_room_instance, many=True
                 ).data,
-                "the_new_instance": instance,
+                "the_new_instance": Suggested_songs_serializer(instance).data,
             }
         else:
             data_to_pass = None
@@ -121,4 +119,5 @@ def trigger_sse(sender, instance, **kwargs):
         else:
             data_to_pass = None
 
+    data = {modal_type: data_to_pass}
     send_event_to_group(room_key, modal_type, data)

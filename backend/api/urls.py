@@ -1,10 +1,11 @@
+from api.views.deleteQueue import delateQueue
 from django.urls import path
 
 from .views.authView import RefreshAccessTokenView
 from .views.roomView import CreateRoomView, JoinRoomView, getRoomInfo
 from .views.songsQueueView import songQueueView
 from .views.songsView import ChangeSong
-from .views.sseView import sse_view
+from .views.sseView import SSEView
 from .views.suggestedSongsView import suggestedSongsView
 from .views.suggestedSongsVotesView import (
     suggestedSongsUserVotesView,
@@ -33,7 +34,8 @@ urlpatterns = [
         name="suggest-song-user-vote",
     ),
     path("songsQueue/", songQueueView.as_view(), name="songs-queue"),
-    path("sse", sse_view, name="sse"),
+    path("sse", SSEView.as_view(), name="sse"),
+    path("deleteQueue", delateQueue.as_view(), name="deleteQueue"),
 ]
 
 # in the futcher to replace evry implamantion of fach for getting the user room by req.user.room

@@ -1,13 +1,10 @@
+from queue import Queue
+
 from api.authentication import CookieJWTAuthentication
 from api.models.customUserModel import CustomUserModel
-from api.models.roomModel import RoomModel
-from api.models.votesModel import VotesModel
-from api.models.VoteUserModel import UserVotesModel
-from api.serializers.room_serializer import RoomSerializer
+from django.contrib.auth.decorators import login_required
 from django.http import StreamingHttpResponse
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from django.views import View
 
 event_data = {
     "VotesModel": None,
@@ -21,22 +18,44 @@ event_data = {
 clients_by_group = {}
 
 
-def sse_view(request):
-    user = request.user
-    user_instance = CustomUserModel.objects.filter(username=user.username).first()
-    user_room = user_instance.room
+event_queue = Queue()  # Create a queue for this client
 
-    # Add the user to their group in the client dictionary
-    if user_room not in clients_by_group:
-        clients_by_group[user_room] = []
-    clients_by_group[user_room].append(request)
 
-    def event_stream():
+class SSEView(View):
+
+    def event_stream(self, user_room, event_queue):
+        clients_by_group[user_room].append(event_queue)
         try:
             while True:
-                yield ""  # Keep connection open
+                # Check for new events in the queue (this will block until an event is available)
+                event_data = event_queue.get(
+                    block=True
+                )  # Wait until an event is pushed
+                yield f"data: {event_data}\n\n"  # Send the event to the client
         except GeneratorExit:
             # Remove the client from the group on disconnect
-            clients_by_group[user_room].remove(request)
+            clients_by_group[user_room].remove(event_queue)
 
-    return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
+    def get(self, request, *args, **kwargs):
+        authenticator = CookieJWTAuthentication()
+        user_auth_tuple = authenticator.authenticate(request)
+
+        if user_auth_tuple is None:
+            return StreamingHttpResponse("Unauthorized", status=401)
+
+        user, _ = user_auth_tuple
+        request.user = user
+        user = request.user
+        user_instance = CustomUserModel.objects.filter(username=user.username).first()
+        user_room = user_instance.room
+
+        # Add the user to their group in the client dictionary
+        if user_room not in clients_by_group:
+            clients_by_group[user_room] = []
+        clients_by_group[user_room].append(request)
+
+        response = StreamingHttpResponse(
+            self.event_stream(user_room, event_queue), content_type="text/event-stream"
+        )
+        response["Cache-Control"] = "no-cache"
+        return response
