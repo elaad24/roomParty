@@ -46,7 +46,7 @@ export interface suggestedSongsInterface {
 
 export default function PartyRoom() {
   const [roomInfo, setRoomInfo] = useState<RoomResponse | null>(null);
-  const [userInfo, setUserInfo] = useState<RoomResponse | null>(null);
+  const [userInfo, setUserInfo] = useState<any | null>(null);
   const [spotifyAuthenticated, setSpotifyAuthenticated] =
     useState<boolean>(false);
   const [currentSongData, setCurrentSongData] =
@@ -110,24 +110,43 @@ export default function PartyRoom() {
 
       setRoomSongsQueue(roomSongsQueue.data);
     };
-    console.log("befor call");
 
-    const eventSource = new EventSource("http://localhost:8000/api/sse", {
-      withCredentials: true,
-    });
-    // const eventSource = new EventSource(sseUrl, { withCredentials: true });
-    console.log("after call");
+    run();
 
-    eventSource.onmessage = (event: MessageEvent) => {
-      console.log("Generic event received: ", event.data);
+    return () => {};
+    //! continuew
+    // make it better the live conection for the front
+    // implemnt the animations
+    // implemt that when song change it notidift the server
+  }, []);
+
+  //useEffect for socket
+  useEffect(() => {
+    // Create a new WebSocket instance
+    const socket = new WebSocket(`ws://localhost:8000/ws/updates/${roomCode}/`);
+
+    // Handle connection open
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+
+      // Optionally send a message to the server
+      socket.send(
+        JSON.stringify({
+          message: `Hello server! user ${userInfo?.username} has connect`,
+        })
+      );
     };
 
-    eventSource.onmessage = function (event) {
-      console.log("Message:", event.data);
+    // Handle received messages from the server
+    socket.onmessage = (event) => {
+      console.log("Message from server:", event.data);
+      // Parse the data if necessary
+
+      const info = JSON.parse(event.data);
       const messageType = JSON.parse(event.data).event_type;
 
       if (messageType == "VotesModel") {
-        const data = JSON.parse(event.data).data.VotesModel;
+        const data = info.data.VotesModel;
         console.log("Data", typeof data, data);
         setCurrentSongVote({
           active_song_id: data.active_song_id,
@@ -143,7 +162,7 @@ export default function PartyRoom() {
       } else if (messageType == "suggestedSongsModel") {
         // implemnt the animations
 
-        const data = JSON.parse(event.data).data.suggestedSongsModel;
+        const data = info.data.suggestedSongsModel;
         console.log("Data", typeof data, data);
 
         setSuggestedSongs(
@@ -160,7 +179,7 @@ export default function PartyRoom() {
           })
         );
       } else if (messageType == "SongsQueueModel") {
-        const data = JSON.parse(event.data).data;
+        const data = info.data.SongsQueueModel;
         console.log("Data", typeof data, data);
         setRoomSongsQueue(
           data.SongsQueueModel.map((i: roomSongsQueueInterface) => {
@@ -176,22 +195,21 @@ export default function PartyRoom() {
       }
     };
 
-    eventSource.onerror = function (event) {
-      console.error("Error:", event);
-      eventSource.close();
+    // Handle errors
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
     };
 
-    run();
+    // Handle connection close
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
 
+    // Clean up when the component unmounts
     return () => {
-      eventSource.close();
+      socket.close();
     };
-    //! continuew
-    // make it better the live conection for the front
-    // implemnt the animations
-    // implemt that when song change it notidift the server
   }, []);
-
   return (
     <Box sx={{ padding: 2, backgroundColor: "#f0f4ff", minHeight: "100vh" }}>
       <Grid container spacing={2}>

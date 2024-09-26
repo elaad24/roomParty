@@ -193,5 +193,3 @@ export const getRoomSongsQueue = async (): Promise<
     return Promise.reject(error);
   }
 };
-
-export const sseUrl = "http://localhost:8000/api/sse";
