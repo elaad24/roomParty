@@ -52,7 +52,7 @@ export default function SuggestedSongsBox({
         console.log("it is true ", suggested_songs_id, "in userVoreData");
 
         setUserVotesData((prev) =>
-          prev?.filter((i) => i.suggested_songs_id == suggested_songs_id)
+          prev?.filter((i) => i.suggested_songs_id !== suggested_songs_id)
         );
       } else {
         console.log("no ", suggested_songs_id, " not in userVoreData");
