@@ -5,7 +5,6 @@ from .views.authView import RefreshAccessTokenView
 from .views.roomView import CreateRoomView, JoinRoomView, getRoomInfo
 from .views.songsQueueView import songQueueView
 from .views.songsView import ChangeSong
-from .views.sseView import SSEView
 from .views.suggestedSongsView import suggestedSongsView
 from .views.suggestedSongsVotesView import (
     suggestedSongsUserVotesView,
@@ -34,7 +33,6 @@ urlpatterns = [
         name="suggest-song-user-vote",
     ),
     path("songsQueue/", songQueueView.as_view(), name="songs-queue"),
-    path("sse", SSEView.as_view(), name="sse"),
     path("deleteQueue", delateQueue.as_view(), name="deleteQueue"),
 ]
 

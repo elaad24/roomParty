@@ -13,8 +13,8 @@ from .serializers.suggested_songs_votes_serializer import (
 )
 from .serializers.userVotes_serializer import UserVotesSerializer
 from .utils.currentVotes import get_current_votes
+from .utils.socketsUtils import broadcast_to_group
 from .utils.songQueueUtils import add_song_to_queue
-from .utils.sseDataFunction import send_event_to_group
 from .utils.updateVoteCountSignal import (
     update_vote_count_in_vote_model_by_voteUserModel_function,
 )
@@ -120,4 +120,4 @@ def trigger_sse(sender, instance, **kwargs):
             data_to_pass = None
 
     data = {modal_type: data_to_pass}
-    send_event_to_group(room_key, modal_type, data)
+    broadcast_to_group(room_key, modal_type, data)
