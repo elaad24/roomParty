@@ -52,10 +52,9 @@ export default function CurrentSongBox({
 
   const ButtonChecker = (value?: "like" | "dislike" | undefined) => {
     let checkBy = submitComment;
+    if (value == undefined) checkBy = null;
 
-    if (value != undefined) checkBy = value;
-
-    if (checkBy == null) {
+    if (checkBy == null || checkBy == undefined) {
       setlikeBtnIsDisabled(false);
       setDislikeBtnIsDisabled(false);
     } else if ("like" == checkBy) {
@@ -78,6 +77,7 @@ export default function CurrentSongBox({
         voteType = "1";
       }
       setSubmitComment(null);
+      ButtonChecker(undefined);
     } else {
       setSubmitComment(value);
       if (value == "like") {
