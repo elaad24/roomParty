@@ -1,9 +1,11 @@
 from itertools import groupby
 from operator import attrgetter
 
+from api.models.customUserModel import CustomUserModel
 from api.models.songs_queue import SongsQueueModel
 from api.models.suggetedSongsModel import suggestedSongsModel
 from api.serializers.songs_queue_serializer import Songs_queue_serializer
+from spotify.utils import execute_spotify_api_request
 
 
 def add_song_to_queue(room_key):
@@ -44,6 +46,16 @@ def add_song_to_queue(room_key):
             add_song_to_queue_serializer.is_valid()
             add_song_to_queue_serializer.save()
             song_id_of_songs_that_added_to_queue.append(data["songs_id"])
+
+            roomHostInstace = CustomUserModel.objects.filter(
+                room=room_key, host=True
+            ).first()
+            execute_spotify_api_request(
+                roomHostInstace,
+                f"me/player/queue?uri=spotify:track:{j.suggested_songs_id}",
+                True,
+            )
+
             songs_to_add -= 1
     print("songs added to queue")
     suggestedSongsModel.objects.filter(
