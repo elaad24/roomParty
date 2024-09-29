@@ -75,7 +75,6 @@ def trigger_sse(sender, instance, **kwargs):
 
     if model_name == "VotesModel":
         # replace the old data
-        print("room_key", instance.room_key)
         if instance.room_key == "":
             return
         data_to_pass = get_current_votes(instance.room_key)

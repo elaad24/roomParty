@@ -101,7 +101,6 @@ export default function PartyRoom() {
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       const token = spotifyAccessToken;
-      console.log("thus ");
       console.log("token", token);
 
       player = new Spotify.Player({
@@ -171,18 +170,15 @@ export default function PartyRoom() {
       setCurrentSongData(data);
 
       setUserInfo(userData);
-      // console.log("user data ", userData);
 
       if (userData?.host == true) {
         await getSpotifyAccessToken();
       }
       const suggestedSongsData = await getSuggestedSongs();
-      // console.log("suggestedSongsData.data.data", suggestedSongsData);
 
       setSuggestedSongs(suggestedSongsData.data.data);
 
       const roomSongsQueue = await getRoomSongsQueue();
-      // console.log("roomSongsQueue", roomSongsQueue);
 
       setRoomSongsQueue(roomSongsQueue.data);
     };
@@ -210,7 +206,6 @@ export default function PartyRoom() {
 
     // Handle received messages from the server
     socket.onmessage = (event) => {
-      console.log("Message from server:", event.data);
       // Parse the data if necessary
 
       const info = JSON.parse(event.data);
@@ -218,7 +213,6 @@ export default function PartyRoom() {
 
       if (messageType == "VotesModel") {
         const data = info.data.VotesModel;
-        console.log("Data", typeof data, data);
         setCurrentSongVote({
           active_song_id: data.active_song_id,
           like: data.like,
@@ -236,7 +230,6 @@ export default function PartyRoom() {
         setPlayAnimation(true);
 
         const data = info.data.SuggestedSongsVotesModal;
-        console.log("datat", data);
 
         setAnimationEventTypeObject({
           animationType: "like",
@@ -250,7 +243,6 @@ export default function PartyRoom() {
         // implemnt the animations
       } else if (messageType == "suggestedSongsModel") {
         const data = info.data.suggestedSongsModel;
-        console.log("suggestedSongsModel", data?.the_new_instance);
         if (
           suggestedSongs?.length &&
           suggestedSongs.filter(
@@ -281,7 +273,6 @@ export default function PartyRoom() {
         return;
       } else if (messageType == "SongsQueueModel") {
         const data = info.data.SongsQueueModel;
-        console.log("Data", typeof data, data);
         setRoomSongsQueue(
           data.SongsQueueModel.map((i: roomSongsQueueInterface) => {
             return {

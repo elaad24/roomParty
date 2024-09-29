@@ -49,14 +49,10 @@ export default function SuggestedSongsBox({
       if (
         userVotesData.some((i) => i.suggested_songs_id == suggested_songs_id)
       ) {
-        console.log("it is true ", suggested_songs_id, "in userVoreData");
-
         setUserVotesData((prev) =>
           prev?.filter((i) => i.suggested_songs_id !== suggested_songs_id)
         );
       } else {
-        console.log("no ", suggested_songs_id, " not in userVoreData");
-
         setUserVotesData((prev) => [
           ...prev,
           {

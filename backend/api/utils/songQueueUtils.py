@@ -15,7 +15,6 @@ def add_song_to_queue(room_key):
     ).order_by("-likes")[:5]
 
     if not suggested_songs_instance:
-        print("no suggested songs ")
         return
     grouped_suggested_songs_by_likes = [
         list(group)
@@ -57,9 +56,7 @@ def add_song_to_queue(room_key):
             )
 
             songs_to_add -= 1
-    print("songs added to queue")
     suggestedSongsModel.objects.filter(
         room_key=room_key,
         suggested_songs_id__in=song_id_of_songs_that_added_to_queue,
     ).delete()
-    print("songs deleted for the queue")

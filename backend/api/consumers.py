@@ -21,7 +21,6 @@ class MyConsumer(AsyncWebsocketConsumer):
 
         self.room_key = self.scope["url_route"]["kwargs"]["room_key"]
         self.room_group_name = f"room_{self.room_key}"
-        print(self.room_key)
         roomInstance = await self.get_room_instance()
         if roomInstance is None:
             await self.close(code=404)

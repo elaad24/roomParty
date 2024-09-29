@@ -25,8 +25,6 @@ const LiveAnimations: React.FC<LiveAnimationsProps> = ({
   const getRandomX = (): number => Math.floor(Math.random() * max_width); // Random X position
 
   const handleAnimationComplete = () => {
-    console.log("pused the animation ");
-
     setAnimation(false); // Change the state when animation is complete
   };
   return (

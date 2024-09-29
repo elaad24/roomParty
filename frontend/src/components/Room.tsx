@@ -22,7 +22,6 @@ export default function Room() {
         const { data } = await axios.get(
           `http://localhost:8000/api/get-room?code=${roomCode}`
         );
-        console.log(data);
 
         setRoomInfo({
           votesToSkip: data.votes_to_skip,

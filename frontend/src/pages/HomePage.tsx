@@ -27,7 +27,6 @@ export default function HomePage() {
 
   const handleJoinRoom = () => {
     navigate("/joinRoom");
-    console.log("Join a Room clicked");
   };
 
   const handleCreateRoom = () => {
