@@ -38,9 +38,13 @@ RoomParty is a music-sharing platform built with Django as the backend and React
 
 3. Run the development server:
 
-   ```bash
-   python manage.py runserver
-   ```
+```bash
+cd backend
+```
+
+```bash
+daphne -b localhost -p 8000 backend.asgi:application
+```
 
 ### **Frontend Setup**
 
