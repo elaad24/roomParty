@@ -1,7 +1,9 @@
-from datetime import timedelta
+import datetime
+from datetime import datetime, timedelta
 
 from api.models.customUserModel import CustomUserModel
 from django.utils import timezone
+from django.utils.timezone import localtime, now
 from requests import get, post, put
 
 from .credenials import CLIENT_ID, CLIENT_SECRET
@@ -11,7 +13,7 @@ BASE_URL = "https://api.spotify.com/v1/"
 
 
 def update_or_create_user_token(username, refresh_token, access_token, token_type):
-    expires_in = timezone.now() + timedelta(
+    expires_in = localtime(now()) + timedelta(
         seconds=3600
     )  # set the the expires is in 1 hour from now
     user_token = SpotifyToken.objects.filter(username=username).first()
@@ -26,7 +28,7 @@ def update_or_create_user_token(username, refresh_token, access_token, token_typ
             access_token=access_token,
             expires_in=expires_in,
             token_type=token_type,
-        ).save()
+        )
         return token.user_token_id
     else:
         # update
@@ -90,6 +92,9 @@ def get_user_tokens(username):
 
 def execute_spotify_api_request(room_host_username, endpoint, post_=False, put_=False):
     tokens = get_user_tokens(room_host_username)
+    if tokens == None:
+        return {"Error": "Issue with request"}
+
     headers = {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + tokens.access_token,
@@ -106,3 +111,11 @@ def execute_spotify_api_request(room_host_username, endpoint, post_=False, put_=
         return response.json()
     except:
         return {"Error": "Issue with request"}
+
+
+def datetime_to_seconds_without_timezone(datetime_obj):
+
+    current_time = datetime.now().replace(tzinfo=None)  # make current time naive
+
+    # Calculate the difference in seconds and round it to an integer
+    return round((datetime_obj - current_time).total_seconds())
