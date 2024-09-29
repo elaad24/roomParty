@@ -21,6 +21,8 @@ import {
   getCurrentSong,
   getSpotifyAccessToken,
 } from "../api/spotify";
+import { getCookie } from "../utils/helpers";
+import LiveAnimations, { LiveAnimationsProps } from "../components/Animation";
 
 export interface currentSongDataInterface {
   title: string;
@@ -63,6 +65,14 @@ export default function PartyRoom() {
   const [roomSongsQueue, setRoomSongsQueue] = useState<
     roomSongsQueueInterface[] | null
   >(null);
+  const [playAnimation, setPlayAnimation] = useState<boolean>(false);
+  const [animationEventTypeObject, setAnimationEventTypeObject] = useState<
+    Partial<LiveAnimationsProps>
+  >({
+    animationType: "like",
+    withText: false,
+    text: "",
+  });
 
   const navigate = useNavigate();
 
@@ -76,6 +86,64 @@ export default function PartyRoom() {
     SuggestedSongsVotesModal: "SuggestedSongsVotesModal",
     suggestedSongsModel: "suggestedSongsModel",
     SongsQueueModel: "SongsQueueModel",
+  };
+
+  const listenForSpotifySDK = (spotifyAccessToken: string) => {
+    // Load the Spotify SDK script
+    console.log("sdk did run ");
+
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    let player: Spotify.Player;
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      const token = spotifyAccessToken;
+      console.log("thus ");
+      console.log("token", token);
+
+      player = new Spotify.Player({
+        name: "Your Web Player",
+        getOAuthToken: (cb) => {
+          cb(token);
+        },
+        volume: 0.5,
+      });
+
+      // Connect to the player
+      player.connect();
+
+      // Listen for player state changes
+      player.addListener("player_state_changed", (state) => {
+        if (!state) {
+          console.error(
+            "User is not playing music through the Web Playback SDK"
+          );
+          return;
+        }
+
+        if (state) {
+          const { position, track_window } = state;
+          const currentTrack = track_window.current_track;
+
+          console.log("Song changed:", currentTrack.name);
+        }
+      });
+      player.on("initialization_error", ({ message }) => {
+        console.error("Failed to initialize", message);
+      });
+      player.on("authentication_error", ({ message }) => {
+        console.error("Failed to authenticate", message);
+      });
+      player.on("account_error", ({ message }) => {
+        console.error("Failed to validate Spotify account", message);
+      });
+      player.on("playback_error", ({ message }) => {
+        console.error("Failed to perform playback", message);
+      });
+    };
   };
 
   useEffect(() => {
@@ -103,7 +171,7 @@ export default function PartyRoom() {
       setCurrentSongData(data);
 
       setUserInfo(userData);
-      console.log("user data ", userData);
+      // console.log("user data ", userData);
 
       if (userData?.host == true) {
         await getSpotifyAccessToken();
@@ -118,8 +186,11 @@ export default function PartyRoom() {
 
       setRoomSongsQueue(roomSongsQueue.data);
     };
-
+    const spotifyAccessTokenCookie = getCookie("spotify_access_token");
     run();
+    if (spotifyAccessTokenCookie) {
+      listenForSpotifySDK(spotifyAccessTokenCookie);
+    }
 
     return () => {};
     //! continuew
@@ -135,13 +206,6 @@ export default function PartyRoom() {
     // Handle connection open
     socket.onopen = () => {
       console.log("WebSocket connection established");
-
-      // Optionally send a message to the server
-      socket.send(
-        JSON.stringify({
-          message: `Hello server! user ${userInfo?.username} has connect`,
-        })
-      );
     };
 
     // Handle received messages from the server
@@ -161,17 +225,46 @@ export default function PartyRoom() {
           dislike: data.dislike,
         });
       } else if (messageType == "UserVotesModel") {
-        //! continuew
-        // implemnt the animations
+        const data = info.data.UserVotesModel;
+        setAnimationEventTypeObject({
+          animationType: data?.vote_type == "1" ? "like" : "dislike",
+          withText: true,
+          text: "",
+        });
+        setPlayAnimation(true);
       } else if (messageType == "SuggestedSongsVotesModal") {
+        setPlayAnimation(true);
+
+        const data = info.data.SuggestedSongsVotesModal;
+        console.log("datat", data);
+
+        setAnimationEventTypeObject({
+          animationType: "like",
+          withText: true,
+          text: ``,
+        });
+        setPlayAnimation(true);
+        return;
+
         //! continuew
         // implemnt the animations
       } else if (messageType == "suggestedSongsModel") {
-        // implemnt the animations
-
         const data = info.data.suggestedSongsModel;
-        console.log("Data", typeof data, data);
-
+        console.log("suggestedSongsModel", data?.the_new_instance);
+        if (
+          suggestedSongs?.length &&
+          suggestedSongs.filter(
+            (i) =>
+              i.suggested_songs_id == data?.the_new_instance?.suggested_songs_id
+          )[0] == undefined
+        ) {
+          setAnimationEventTypeObject({
+            animationType: "text",
+            withText: true,
+            text: `suggested ${data?.the_new_instance?.suggested_song_title}`,
+          });
+          setPlayAnimation(true);
+        }
         setSuggestedSongs(
           data.all_data.map((i: suggestedSongsInterface) => {
             return {
@@ -185,6 +278,7 @@ export default function PartyRoom() {
             };
           })
         );
+        return;
       } else if (messageType == "SongsQueueModel") {
         const data = info.data.SongsQueueModel;
         console.log("Data", typeof data, data);
@@ -215,28 +309,44 @@ export default function PartyRoom() {
     // Clean up when the component unmounts
     return () => {
       socket.close();
+
+      // Cleanup function to disconnect the player
+      // if (player) {
+      //   player.disconnect();
+      //   console.log("Disconnected Spotify Player");
+      // }
     };
   }, []);
   return (
     <Box sx={{ padding: 2, backgroundColor: "#f0f4ff", minHeight: "100vh" }}>
       <Grid container spacing={2}>
-        <CurrentSongBox
-          room_key={roomCode ? roomCode : "0"}
-          currentSongData={
-            currentSongData
-              ? currentSongData
-              : {
-                  title: "",
-                  artist: "",
-                  image_url: "",
-                  is_playing: false,
-                  id: "",
-                  like: 0,
-                  dislike: 0,
-                }
-          }
-          currentSongVotes={currentSongVote}
-        />
+        <Grid position={"relative"}>
+          <CurrentSongBox
+            room_key={roomCode ? roomCode : "0"}
+            currentSongData={
+              currentSongData
+                ? currentSongData
+                : {
+                    title: "",
+                    artist: "",
+                    image_url: "",
+                    is_playing: false,
+                    id: "",
+                    like: 0,
+                    dislike: 0,
+                  }
+            }
+            currentSongVotes={currentSongVote}
+          />
+          <LiveAnimations
+            userName={userInfo?.username}
+            animationType={animationEventTypeObject.animationType || "like"}
+            withText={animationEventTypeObject.withText}
+            text={animationEventTypeObject.text}
+            startAnimation={playAnimation}
+            setAnimation={setPlayAnimation}
+          />
+        </Grid>
         <SuggestedSongsBox
           room_key={roomCode ? roomCode : ""}
           songs={suggestedSongs}
