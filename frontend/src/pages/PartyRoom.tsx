@@ -7,7 +7,6 @@ import {
   getSuggestedSongs,
   RoomResponse,
   roomSongsQueueInterface,
-  sseUrl,
 } from "../api/roomRequsets";
 
 import Grid from "@mui/material/Grid2";
@@ -238,9 +237,6 @@ export default function PartyRoom() {
         });
         setPlayAnimation(true);
         return;
-
-        //! continuew
-        // implemnt the animations
       } else if (messageType == "suggestedSongsModel") {
         const data = info.data.suggestedSongsModel;
         if (
@@ -359,9 +355,6 @@ export default function PartyRoom() {
           }
         />
         <SuggestSongBox room_key={roomCode as string} />
-        {/* Suggest Song Section */}
-        {/* Connect with Spotify Section */}
-        {/* <ConnectToSpotifybox /> */}
       </Grid>
     </Box>
   );

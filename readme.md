@@ -1,14 +1,26 @@
-Here is the updated version with code blocks for the commands and code references:
-
----
-
-## **README.md**
-
 # RoomParty API Documentation
 
-This project is a backend API built with Django for a music-sharing platform called "RoomParty." The API allows a host to play music in a room, where other users can join, vote for the current song, and request changes based on votes.
+## **Project Overview**
+
+RoomParty is a music-sharing platform built with Django as the backend and React for the frontend. The goal of this project is to explore and learn Python and Django while creating an interactive music room experience. Users can host or join rooms, suggest songs, vote on tracks, and interact in real time with Spotify integration for seamless music playback.
+
+## Images
+
+- Full working dashboard
+
+<img src="./frontend/src/assets/1.png" alt="full working dashboard" width="500"/>
+
+- when user like the current song
+
+<img src="./frontend/src/assets/2.png" alt="full working dashboard" width="500"/>
+
+- the effect from the project on the spotify native media player
+
+<img src="./frontend/src/assets/4.png" alt="full working dashboard" width="500"/>
 
 ## **Setup and Configuration**
+
+### **Backend Setup**
 
 1. Clone the repository and install dependencies.
 
@@ -30,113 +42,139 @@ This project is a backend API built with Django for a music-sharing platform cal
    python manage.py runserver
    ```
 
-### **Core Models**
+### **Frontend Setup**
 
-- **User (Extended from Django User)**:
+- Install frontend dependencies, configure environment variables for API endpoints, and run the React app.
 
-  - Fields: `username`, `password`, `room` (ForeignKey), `host` (Boolean).
-  - Tokens: Access and refresh tokens are generated on user creation.
+---
 
-- **RoomModel**:
+## **Backend Structure**
 
-  - `room_key`: Unique identifier for each room.
-  - `host`: Reference to the host user (ForeignKey to User).
-  - `vote_requirement_type`: Defines how many votes are needed to change a song (either by number or percentage).
-  - `vote_requirement_value`: Number or percentage required for a song change.
+### **Core Models Overview**
 
-- **VotesModel**:
+#### Models (API)
 
-  - Represents each room's voting status.
-  - Fields include `current_song_id`, `current_song_image`, `like_count`, `dislike_count`.
-  - Data is summarized by signals, and the model is updated automatically based on votes received from `UserVotesModel`.
+1. **customUserModel**: Extends Django's user model to include custom fields like `room` and `host`, and manages user authentication tokens.
+2. **roomModel**: Handles room creation and management, including room keys, host information, and voting requirements.
+3. **songs_queue**: Stores and manages the queue of songs that will be played in the room, ordered by priority.
+4. **suggestedSongsVotesModel**: Tracks user votes for suggested songs, allowing users to vote for songs they want added to the queue.
+5. **suggestedSongsModel**: Stores songs suggested by users for a room and interacts with voting to determine their order in the queue.
+6. **votesModel**: Tracks votes (likes/dislikes) for the currently playing song in a room and updates real-time voting stats.
+7. **VoteUserModel**: Records each user's vote action on a song in a room, providing detailed voting history.
 
-- **UserVotesModel**:
-  - Records every user’s voting action in a room.
-  - Fields include `user_id`, `room_id`, `vote_type` (like/dislike).
-  - Ensures only current song votes are recorded, ignoring outdated requests.
-  - When a song changes, previous votes for that song are deleted.
+---
+
+#### Models (Spotify Integration)
+
+1. **SpotifyToken**: Manages Spotify access tokens and refresh tokens for authenticated users, enabling interaction with Spotify’s API.
 
 ---
 
 ### **API Endpoints Overview**
 
-#### **User Management**
+#### User Management (api/)
 
-- **Create User API**:
+- **createUser**: Registers a new user with authentication tokens (access and refresh).
+- **newAccessToken**: Generates a new access token using the refresh token.
+- **getUserInfo**: Retrieves user information.
+- **isUserInRoom**: Checks if a user is in a specific room.
 
-  - Creates a new user with `username`, `password`, `room`, and `host` status.
-  - Automatically generates and returns access and refresh tokens.
-  - Checks for a unique username during registration.
+#### Room Management (api/)
 
-- **Login API**:
-  - Handles user authentication with `username` and `password`.
-  - Generates new access and refresh tokens upon successful login.
+- **createRoom**: Creates a room with a unique key. If a user already owns a room, the old one is deleted.
+- **joinRoom**: Adds a user to an existing room using a valid room key.
+- **getRoomInfo**: Fetches detailed information about a specific room.
 
-#### **Room Management**
+#### Voting System (api/)
 
-- **Create Room API**:
+- **vote**: Allows users to vote on the current song playing in their room (like/dislike).
+- **suggestSongVote**: Users vote on suggested songs for a room.
+- **suggestSongUserVote**: Retrieves the voting information of users for suggested songs.
 
-  - Generates a unique `room_key` when a new room is created.
-  - If the user already has a room, the previous room is deleted from both `RoomModel` and `VotesModel`.
-  - Deletes any associated votes in `UserVotesModel` for the previous room.
-  - An instance in `VotesModel` is created to represent the new room.
-  - **New feature**: When a room is deleted, the room key is also removed from any users who were in that room, setting their room field to `null`.
+#### Song Management (api/)
 
-- **Enter Room API**:
-  - Users enter a room by providing a valid `room_key`.
-  - Updates the user's `room` field to link them to the new room.
-  - Removes the previous room assignment from the user (ensuring the user is in only one room at a time).
+- **changeSong**: Changes the currently playing song in a room and resets votes.
+- **songsQueue**: Manages the song queue, retrieving and adding songs for playback.
 
-#### **Voting System**
+#### Suggested Songs Logic
 
-- **Vote API**:
-  - Allows a user to vote for the current song in a room (`like`/`dislike`).
-  - Verifies that the user is in the correct room before submitting the vote.
-  - If the user has already voted for the current song, their previous vote is updated.
-  - Ensures votes only apply to the currently active song and not outdated ones.
-  - Triggers a signal to update the `VotesModel` with the vote tally.
+- **suggestSong**: Users can suggest songs to be played next. Songs with the most votes are prioritized and added to the room’s queue.
+  - **Queue Logic**: The queue is kept filled with up to 5 songs. When the queue has fewer than 5 songs, new songs are added based on user votes.
 
-#### **Song Management**
+#### Spotify API Endpoints (spotify/)
 
-- **Change Song API**:
-  - Changes the current song in a room, updating the `current_song_id` and `current_song_image` in `VotesModel`.
-  - Resets `like_count` and `dislike_count` for the new song.
-  - Deletes all previous votes from `UserVotesModel` for the previous song in that room.
+- **get-auth-url**: Provides the OAuth URL for Spotify authentication.
+- **redirect**: Handles Spotify authentication redirection and processes access tokens.
+- **is-Authenticated**: Checks if the user is authenticated with Spotify.
+- **set-spotify-username**: Stores the Spotify username of the user.
+- **current-song**: Retrieves the currently playing song for a user.
+- **search-song**: Allows users to search for songs via Spotify API.
+- **return-spotify-access-token**: Returns a Spotify access token for authenticated requests.
+
+---
+
+### **WebSocket Integration**
+
+- Uses Django Channels to enable WebSocket connections for real-time data transfer between the backend and frontend.
+- WebSocket messages are triggered by signals when certain models are updated, ensuring real-time updates for song changes, votes, and suggestions.
+- The frontend React app listens to these WebSocket updates and re-renders components accordingly.
 
 ---
 
 ### **Signals**
 
-- **VotesModel Update**:
+A single section handling all signals used for model state updates and WebSocket notifications:
 
-  - A signal that listens for changes in `UserVotesModel` and updates the vote tally in `VotesModel` for the room.
-  - Automatically updates `like_count` and `dislike_count` whenever a vote is cast.
+1. **`update_vote_count_in_vote_model_by_voteUserModel`**:
 
-- **Clean-up on Song Change**:
-  - Another signal that listens for song changes and cleans up `UserVotesModel`, removing votes related to the previous song.
+   - **Triggered by**: `UserVotesModel`
+   - **Action**: On save/delete of a user's vote, the vote count in `votesModel` is updated.
+
+2. **`update_vote_count_after_delete`**:
+
+   - **Triggered by**: `UserVotesModel`
+   - **Action**: Updates `votesModel` when a user vote is deleted.
+
+3. **`cleanup_in_UserVotesModel_when_song_change`**:
+
+   - **Triggered by**: `VotesModel` (pre-save)
+   - **Action**: Cleans up votes in `UserVotesModel` and updates the song queue when a new song is played.
+
+4. **`sockets_trigger`**:
+   - **Triggered by**: Changes in `VotesModel`, `UserVotesModel`, `suggestedSongsVotesModel`, `suggestedSongsModel`, and `SongsQueueModel`.
+   - **Action**: Sends WebSocket updates to the frontend based on model changes to keep the app state synchronized in real-time.
+
+---
+
+## **Spotify Authentication**
+
+After a room is created, users are redirected to the Spotify OAuth2 page to log in with their Spotify credentials. Upon authentication, Spotify tokens (access and refresh) are stored and utilized to manage Spotify interactions like song search and playback.
 
 ---
 
-### **Authentication**
+## **Frontend Structure and Components**
 
-- All API views are protected by authentication. The `authView` middleware grabs the access token from the request and validates the user.
-
----
-
-### **Features Completed**
-
-1. **User Registration and Token Generation**: Created functionality to register new users, checking for unique usernames and returning access and refresh tokens.
-2. **Room Creation**: When a room is created, a unique room code is generated. Old rooms and their related votes are deleted if the user had a previous room. **Additionally, the room key is removed from other users who were in the deleted room.**
-3. **Enter Room**: Users can join rooms by submitting a valid room key, which updates their user data.
-4. **Voting System**: Implemented a vote model to track user votes, ensuring only one vote per song per user. Votes are analyzed by signals and the tally is automatically updated in the room's vote model.
-5. **Song Management**: Created a function to change the current song in a room, reset vote counts, and clean up previous song data.
-6. **Authentication**: All views are protected using an access token validation function (`authView`), ensuring only authenticated users can interact with the API.
+1. **RoomParty Page**: The main page of the app, containing the core components and state management for all features.
+2. **Current Song Box**: Displays the current song’s details (name, artist, image) and voting buttons to like/dislike the song.
+3. **Suggested Song Box**: Allows users to suggest songs by typing in a search box, which uses Spotify API with debouncing for optimization.
+4. **Suggested Songs List**: Shows all user-suggested songs, votes on each suggestion, and integrates voting logic.
+5. **Queue Component**: Displays the next songs to be played in the room based on votes and suggestions.
+6. **Animations**: Real-time feedback animations for user actions (e.g., liking a song, suggesting a song).
 
 ---
+
+## **Testing and Future Work**
+
+### **Testing**
+
+- **Backend Testing**: Ensure all API endpoints work as expected and cover edge cases.
+- **Frontend Testing**: Test all components, interactions with the backend, and WebSocket updates.
 
 ### **Future Work**
 
-- **Real-time Updates**: Transition from REST to WebSockets for live updates (e.g., song changes, vote tallies).
-- **Spotify Integration**: Implement Spotify login and recommendations using user song preferences and AI-based analysis.
+- **Song Change Detection**: Implement functionality to detect when a song changes in the Spotify player.
+- **Access Token Refresh**: Improve handling of Spotify tokens to ensure seamless playback and data fetching.
 
 ---
+
+This version should give you a clearer and more professional overview for developers to understand the project and track remaining tasks effectively. Let me know if any specific details need to be further adjusted!

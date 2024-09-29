@@ -66,7 +66,7 @@ def fetch_songs_from_suggestion_list_to_songs_queue_when_song_change(
 @receiver(post_save, sender=suggestedSongsModel)
 # to track the songs queue
 @receiver(post_save, sender=SongsQueueModel)
-def trigger_sse(sender, instance, **kwargs):
+def sockets_trigger(sender, instance, **kwargs):
     room_key = instance.room_key
     model_name = sender.__name__
     modal_type = ""
