@@ -57,3 +57,13 @@ export const getCurrentSong = async () => {
     return Promise.reject(error);
   }
 };
+export const getSpotifyAccessToken = async () => {
+  try {
+    const { data } = await apiClient.get(
+      `${spotifyRoute}return-spotify-access-token`
+    );
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

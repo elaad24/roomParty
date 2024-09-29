@@ -16,7 +16,11 @@ import CurrentSongBox from "../components/CurrentSongBox";
 import SuggestedSongsBox from "../components/SuggestedSongsBox";
 import SongsQueue from "../components/SongsQueue";
 import SuggestSongBox from "../components/SuggestSongBox";
-import { authenticateSpotify, getCurrentSong } from "../api/spotify";
+import {
+  authenticateSpotify,
+  getCurrentSong,
+  getSpotifyAccessToken,
+} from "../api/spotify";
 
 export interface currentSongDataInterface {
   title: string;
@@ -99,7 +103,11 @@ export default function PartyRoom() {
       setCurrentSongData(data);
 
       setUserInfo(userData);
+      console.log("user data ", userData);
 
+      if (userData?.host == true) {
+        await getSpotifyAccessToken();
+      }
       const suggestedSongsData = await getSuggestedSongs();
       // console.log("suggestedSongsData.data.data", suggestedSongsData);
 
@@ -115,7 +123,6 @@ export default function PartyRoom() {
 
     return () => {};
     //! continuew
-    // make it better the live conection for the front
     // implemnt the animations
     // implemt that when song change it notidift the server
   }, []);
