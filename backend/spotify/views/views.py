@@ -29,7 +29,7 @@ class AuthURL(APIView):
         authentication_classes = [CookieJWTAuthentication]
         permission_classes = [IsAuthenticated]
 
-        scopes = "user-read-playback-state user-modify-playback-state user-read-currently-playing streaming"
+        scopes = "user-read-playback-state user-modify-playback-state user-read-currently-playing app-remote-control streaming user-read-recently-played user-library-read"
 
         url = (
             Request(

@@ -13,6 +13,7 @@ BASE_URL = "https://api.spotify.com/v1/"
 
 
 def update_or_create_user_token(username, refresh_token, access_token, token_type):
+
     expires_in = localtime(now()) + timedelta(
         seconds=3600
     )  # set the the expires is in 1 hour from now

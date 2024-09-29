@@ -8,8 +8,16 @@ import Signup from "./pages/Signup";
 import RequireAuth from "./auth/RequireAuth";
 import { AuthProvider } from "./auth/AuthContext";
 import PartyRoom from "./pages/PartyRoom";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <AuthProvider>
       <Routes>
